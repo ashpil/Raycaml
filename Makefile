@@ -1,4 +1,3 @@
-OBJECTS=bin/main.ml
 RUN=bin/main.exe
 TEST=test
 
@@ -6,10 +5,10 @@ default: build
 	dune utop lib
 
 build:
-	dune build $(OBJECTS)
+	dune build
 
 run:
-	dune build $(OBJECTS)
+	dune build
 	dune exec $(RUN)
 
 test:

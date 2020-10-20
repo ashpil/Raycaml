@@ -1,2 +1,3 @@
 (library
- (name raycaml))
+ (name raycaml)
+ (libraries yojson))
