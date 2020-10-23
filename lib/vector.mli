@@ -1,6 +1,5 @@
-(** [t] is a vector with x-position [x], y-position [y], 
-    and z-position [z]. *)
-type t = {x : float; y : float; z : float}
+(** [t] is the vector type *)
+type t
 
 (** [from_json j] is the vector represented by the json structure [j] *)
 val from_json : Yojson.Basic.t -> t
