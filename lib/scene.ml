@@ -1,4 +1,4 @@
-type t = { objects: Object.t; camera: Camera.t }
+type t = { objects: Object.t list; camera: Camera.t }
 
 let from_json json =
   failwith "todo"
