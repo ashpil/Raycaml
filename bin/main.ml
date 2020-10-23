@@ -34,8 +34,8 @@ let () =
   fprintf oc "%s\n" height; (* write vertical dimension of image *)  
   fprintf oc "%s\n" max_color; 
 
-  for row = 0 to (int_of_string width) do (* write each row *)
-    for column = 0 to (int_of_string height) do (* write each pixel in a row *)
+  for _ = 0 to (int_of_string width) do (* write each row *)
+    for _ = 0 to (int_of_string height) do (* write each pixel in a row *)
       fprintf oc "%s " "19"; (* red *)
       fprintf oc "%s " "132"; (* green *)
       fprintf oc "%s     " "255"; (* blue *)

@@ -9,6 +9,10 @@ type hit_record = {t : float;
                   front_face : bool; 
                   material : t}
 
+let scatter material (ray : Ray.t) hit_record = match material with
+  | Lambertian vec ->  failwith "Unimplemented"
+  | Metal (vec, flo) -> failwith "Unimplemented"
+  | Dielectric refraction -> failwith "Unimplemented"
 
     
 
