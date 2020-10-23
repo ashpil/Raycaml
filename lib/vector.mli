@@ -35,7 +35,7 @@ val ( * ) : t -> float -> t
 val dot_prod : t -> t -> float 
 
 (** [cross_produ t1 t2] is the cross product of the vectors [t1] and [t2]*)
-val cross_prod : t -> t -> float 
+val cross_prod : t -> t -> t 
 
 (** [length t] is the length, or norm, of [t] *)
 val length : t -> float 
