@@ -1,11 +1,24 @@
+open Yojson.Basic.Util
+
 type t = {x : float; y : float; z : float}
 
+let from_json json = {
+  x = json |> member "x" |> to_float;
+  y = json |> member "y" |> to_float;
+  z = json |> member "z" |> to_float;
+}
 
 let create x y z = {
   x = x;
   y = y; 
   z = z;
 } 
+
+let origin = {
+  x = 0.;
+  y = 0.;
+  z = 0.;
+}
 
 let get_x t = t.x
 

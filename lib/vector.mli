@@ -2,8 +2,14 @@
     and z-position [z]. *)
 type t = {x : float; y : float; z : float}
 
-(** [create x y z] is the vector with coordinates [x], [y], and [z]*)
+(** [from_json j] is the vector represented by the json structure [j] *)
+val from_json : Yojson.Basic.t -> t
+
+(** [create x y z] is the vector with coordinates [x], [y], and [z] *)
 val create : float -> float -> float -> t 
+
+(** [origin] is the vector with coordinates [0], [0], and [0] *)
+val origin : t 
 
 (** [get_x t] is the x coordinate of vector [t] *)
 val get_x : t -> float 

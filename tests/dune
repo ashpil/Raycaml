@@ -1,0 +1,3 @@
+(test
+ (name raycaml)
+ (libraries raycaml ounit2 yojson))

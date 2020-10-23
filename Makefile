@@ -1,5 +1,5 @@
 RUN=bin/main.exe
-TEST=test
+TEST=tests
 
 default: build
 	dune utop lib
@@ -12,6 +12,7 @@ run:
 	dune exec $(RUN)
 
 test:
+	dune build
 	dune runtest $(TEST)
 	
 clean:

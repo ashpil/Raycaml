@@ -5,4 +5,4 @@ type t
 (* A hit_record is a collection of data for when a ray hits an object *)
 type hit_record
 
-(* Documentation for Scatter *)
+val from_json : Yojson.Basic.t -> t
