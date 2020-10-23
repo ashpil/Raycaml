@@ -1,3 +1,7 @@
 (library
  (name raycaml)
  (libraries yojson))
+
+(env
+  (dev
+    (flags (:standard -warn-error -A))))
