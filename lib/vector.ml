@@ -55,7 +55,7 @@ let length t = sqrt(t.x *. t.x +. t.y *. t.y +. t.z *. t.z)
 
 let unit_vector t1 = div_constant t1 (length t1)
 
-let random_unit_vector = 
+let random_unit_vector () = 
   let theta = Random.float (2. *. Float.pi) in 
   let pos_or_neg = Random.bool () in 
   let z = if pos_or_neg then Random.float 1. else Random.float (-1.) in 
