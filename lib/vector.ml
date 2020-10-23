@@ -25,7 +25,13 @@ let ( + ) t1 t2 = {
   z = t1.z +. t2.z;
 }
 
-let ( * ) t1 t2 = {
+let ( * ) t c = {
+  x = t.x *. c;
+  y = t.y *. c;
+  z = t.z *. c;
+}
+
+let mult t1 t2 = {
   x = t1.x *. t2.x;
   y = t1.y *. t2.y;
   z = t1.z *. t2.z;
@@ -35,12 +41,6 @@ let div_constant t c = {
   x = t.x /. c;
   y = t.y /. c;
   z = t.z /. c;
-}
-
-let mult_constant t c = {
-  x = t.x *. c;
-  y = t.y *. c;
-  z = t.z *. c;
 }
 
 let dot_prod t1 t2 = (t1.x *. t2.x) + (t1.y *. t2.y) + (t1.z *. t2.z)
