@@ -6,9 +6,13 @@ type t =
     | Box of { width: float; height: float; material: Material.t; position: pos }
     | Cylinder of { radius: float; height: float; material: Material.t; position: pos }
 
-let mat obj =
-  obj.material
+let mat = function 
+  | Sphere { material } -> material
+  | Box { material } -> material
+  | Cylinder { material } -> material
 
-let pos obj =
-  obj.position
+let pos = function
+  | Sphere { position } -> position
+  | Box { position } -> position
+  | Cylinder { position } -> position
 
