@@ -28,7 +28,7 @@ val ( + ) : t -> t -> t
 (** [ mult t1 t2] is the vector product of vector [t1] and vector [t2]. *)
 val mult : t -> t -> t
 
-(** [mult_constant t c] is a vector after each coordinate has been divided by a 
+(** [div_constant t c] is a vector after each coordinate has been divided by a 
     constant factor c *)
 val div_constant : t -> float -> t 
 

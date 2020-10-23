@@ -64,7 +64,7 @@ let cross_prod t1 t2 = {
   z = (t1.x *. t2.y) -. (t1.y *. t2.x);
 }
 
-let length t = sqrt(t.x *. t.x +. t.y *. t.y +. t.z *. t.z)
+let length t = Float.sqrt(t.x *. t.x +. t.y *. t.y +. t.z *. t.z)
 
 let unit_vector t1 = div_constant t1 (length t1)
 
