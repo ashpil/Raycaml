@@ -20,16 +20,16 @@ val ( - ) : t -> t -> t
 (** [ + t1 t2] is the vector sum of vector [t1] plus vector [t2]. *)
 val ( + ) : t -> t -> t 
 
-(** [ * t1 t2] is the vector product of vector [t1] and vector [t2]. *)
-val ( * ) : t -> t -> t
+(** [ mult t1 t2] is the vector product of vector [t1] and vector [t2]. *)
+val mult : t -> t -> t
 
 (** [mult_constant t c] is a vector after each coordinate has been divided by a 
     constant factor c *)
 val div_constant : t -> float -> t 
 
-(** [mult_constant t c] is a vector after each coordinate has been 
+(** [ * t c] is a vector after each coordinate has been 
     multiplied by a constant factor c *)
-val mult_constant : t -> float -> t 
+val ( * ) : t -> float -> t 
 
 (** [dot_prod t1 t2] is the dot product of the vectors [t1] and [t2]*)
 val dot_prod : t -> t -> float 
