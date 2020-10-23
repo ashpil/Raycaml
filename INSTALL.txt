@@ -1,3 +1,6 @@
-instructions on how to install and build your system
-This file should include any commands the grader needs to run to install 
-OPAM packages, etc.
+# Install
+
+Right now, you pretty much already have all the modules you might need from
+the basic 3110 install. So, `yojson`.
+
+The Makefile is pretty self explanatory, too. `make build` to build

@@ -1,4 +1,5 @@
 type pos = float * float * float
+
 (** The [object] is a shape that exists
     in the scene and has properties. *)
 type t =
@@ -7,12 +8,12 @@ type t =
     | Cylinder of { radius: float; height: float; material: Material.t; position: pos }
 
 let mat = function 
-  | Sphere { material } -> material
-  | Box { material } -> material
-  | Cylinder { material } -> material
+  | Sphere { material; _ } -> material
+  | Box { material; _ } -> material
+  | Cylinder { material; _ } -> material
 
 let pos = function
-  | Sphere { position } -> position
-  | Box { position } -> position
-  | Cylinder { position } -> position
+  | Sphere { position; _ } -> position
+  | Box { position; _ } -> position
+  | Cylinder { position; _ } -> position
 
