@@ -43,12 +43,12 @@ let div_constant t c = {
   z = t.z /. c;
 }
 
-let dot_prod t1 t2 = (t1.x *. t2.x) + (t1.y *. t2.y) + (t1.z *. t2.z)
+let dot_prod t1 t2 = (t1.x *. t2.x) +. (t1.y *. t2.y) +. (t1.z *. t2.z)
 
 let cross_prod t1 t2 = {
-  x = (t1.y * t2.z) - (t1.z * t2.y);
-  y = (t1.z * t2.x) - (t1.x * t2.z);
-  z = (t1.x * t2.y) - (t1.y * t2.x);
+  x = (t1.y *. t2.z) -. (t1.z *. t2.y);
+  y = (t1.z *. t2.x) -. (t1.x *. t2.z);
+  z = (t1.x *. t2.y) -. (t1.y *. t2.x);
 }
 
 let length t = sqrt(t.x *. t.x +. t.y *. t.y +. t.z *. t.z)
