@@ -7,4 +7,4 @@ val from_json :  Yojson.Basic.t -> t
 (** [mat object] is the material of [object] *)
 val mat : t -> Material.t
 
-val intersect : t -> Ray.t -> Hit.t
+val intersect : Ray.t -> t -> Hit.t

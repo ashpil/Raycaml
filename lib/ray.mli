@@ -1,5 +1,5 @@
 (* A ray has an origin and a direction *)
-type t = {origin : Vector.t; direction : Vector.t}
+type t
 
 (** Create a ray at [origin] with [direction] *)
 val create : Vector.t -> Vector.t -> t
@@ -8,4 +8,8 @@ val create : Vector.t -> Vector.t -> t
 A is the ray's origin, b is the ray's direction, and t is the magnitude.*)
 val evaluate : t -> float -> Vector.t
 
-(* test change *)
+val dir : t -> Vector.t
+
+val origin : t -> Vector.t
+
+val in_bounds : float -> t -> bool
