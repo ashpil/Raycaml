@@ -15,13 +15,16 @@ let from_json json =
 
 let generate_ray camera x y = 
   let w = Vector.unit_vector (Vector.(-) camera.origin camera.target) in
-  let u = Vector.unit_vector (Vector.(cross_prod) camera.vertical w) in
-  let v = Vector.unit_vector (Vector.(cross_prod) w u) in
+  let u = Vector.unit_vector (Vector.cross_prod camera.vertical w) in
+  let v = Vector.unit_vector (Vector.cross_prod w u) in
   let height = 2. *. Float.tan(camera.vfov *. Float.pi /. 360.) in 
   let width = camera.aspect_ratio *. height in  
-  let d = Vector.length camera.origin in
+(*  let d = Vector.length camera.origin in
   let x_comp = Vector.length (Vector.( * ) u (width *. x)) in 
   let y_comp = Vector.length (Vector.( * ) v (height *.y)) in 
   let z_comp =  Vector.length (Vector.( * ) w (-.d)) in
-  let direction = Vector.create x_comp y_comp z_comp in
+  let direction = Vector.create x_comp y_comp z_comp in *)
+  let x = width *. (x -. 0.5) in
+  let y = height *. (y -. 0.5) in
+  let direction = Vector.( - ) (Vector.( + ) (Vector.( * ) u x) (Vector.( * ) v y)) w in
   Ray.create camera.origin direction 

@@ -30,7 +30,7 @@ let ten_forward = Vector.create 10. 0. 0.
 let unit_up = Vector.create 0. 1. 0.
 let material = Material.create_dielectric 5.
 let bg_color = Vector.create 19. 32. 190.
-let camera = Camera.create zero_vector unit_forward 0.5 unit_up 90.
+let camera = Camera.create zero_vector unit_forward (3./.2.) unit_up 90.
 let sphere = Object.create_sphere 1. ten_forward material
 let scene = Scene.create [sphere] camera bg_color
 
