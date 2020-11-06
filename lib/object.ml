@@ -3,8 +3,10 @@ open Yojson.Basic.Util
 (** The [object] is a shape that exists
     in the scene and has properties. *)
 type t =
-    | Sphere of { radius: float; material: Material.t; center: Vector.t }
+    | Sphere of { radius: float; center: Vector.t; material: Material.t }
     | Triangle of { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
+
+let create_sphere radius center material = Sphere { radius; center; material }
 
 (* TODO: clean this up *)
 let from_json json =
@@ -40,15 +42,15 @@ let intersect_sphere radius center ray mat =
   let dt2 = (b *. b) -. (4. *. a *. c) in
 
   if dt2 < 0. then 
-    Hit.no_hit
+    None
   else 
     let dt = dt2 *. dt2 in
 
     let t0 = -.(b +. dt) /. (2. *. a) in
     let t1 = -.(b -. dt) /. (2. *. a) in
-    if Ray.in_bounds t0 ray then hit_from_t ray center t0 mat
-    else if Ray.in_bounds t1 ray then hit_from_t ray center t1 mat
-    else Hit.no_hit
+    if Ray.in_bounds t0 ray then Some (hit_from_t ray center t0 mat)
+    else if Ray.in_bounds t1 ray then Some (hit_from_t ray center t1 mat)
+    else None
 
 
 let intersect ray = function

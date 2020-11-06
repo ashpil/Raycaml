@@ -5,13 +5,8 @@ type t =
    vertical: Vector.t;
    vfov : float} (* vfov = vertical field of view*)
 
-let create origin target aspect_ratio vertical vfov = {
-  origin = origin;
-  target = target;
-  aspect_ratio = aspect_ratio;
-  vertical = vertical;
-  vfov = vfov;
-}
+let create origin target aspect_ratio vertical vfov =
+  { origin; target; aspect_ratio; vertical; vfov; }
 
 (* Not actually useful at the moment, just dummy function so we can test scenes *)
 let from_json json = 

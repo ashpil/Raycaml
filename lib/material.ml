@@ -5,6 +5,8 @@ type t =
   | Metal of Vector.t * float
   | Dielectric of float
 
+let create_dielectric f = Dielectric f
+
 let from_json json =
   match json |> member "type" |> to_string with 
   | "lambertian" -> Lambertian (json |> member "vec" |> Vector.from_json)
