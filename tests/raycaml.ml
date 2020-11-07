@@ -81,9 +81,62 @@ let vector_tests =
     unit_vector_test "Unit vector of vector1" vector1 vector10;
   ]
 
+let evaluate_test name ray magnitude expect = 
+  name >:: fun _ ->
+    assert_equal expect (Ray.evaluate ray magnitude)
+
+let dir_test name ray expect = 
+  name >:: fun _ ->
+    assert_equal expect (Ray.dir ray)
+
+let origin_test name ray expect = 
+  name >:: fun _ ->
+    assert_equal expect (Ray.origin ray)
+
+let in_bounds_test name d ray expect = 
+  name >:: fun _ ->
+    assert_equal expect (Ray.in_bounds d ray)
+
+let ray1_origin = Vector.create 0. 0. 0.
+let ray1_direction = Vector.create 1. 0. 0.
+let ray1 = Ray.create ray1_origin ray1_direction
+let evaluated_vector = Vector.(+) ray1_origin (Vector.( * ) ray1_direction 2.)
+
+let ray_tests = 
+  [
+    evaluate_test "evaluate with magnitude 2" ray1 2. evaluated_vector;
+    dir_test "direction of ray1" ray1 ray1_direction;
+    origin_test "origin of ray1" ray1 ray1_origin;
+
+  ]
+
+let vector_eye = Vector.create 10. 4.2 6.
+let vertical = Vector.create 0. 1. 0.
+let camera1 = Camera.create vector_eye vector_o 1.6 vertical 36.87
+let dir_vector = Vector.create 0. 0. 12.3951603459
+let ray_o = Ray.create vector_eye dir_vector
+
+let print_ray ray = 
+  "origin vector: " ^ string_of_float (Vector.get_x (Ray.origin ray)) ^ " " ^
+  string_of_float (Vector.get_y (Ray.origin ray)) ^ " " ^
+  string_of_float (Vector.get_z (Ray.origin ray)) ^ " " ^
+  "direction vector: " ^ string_of_float (Vector.get_x (Ray.dir ray)) ^ " " ^
+  string_of_float (Vector.get_y (Ray.dir ray)) ^ " " ^
+  string_of_float (Vector.get_z (Ray.dir ray))
+
+let generate_test name camera x y expect = 
+  name >:: fun _ ->
+    assert_equal expect (Camera.generate_ray camera x y) ~printer:(print_ray)
+
+let camera_tests = 
+  [
+    generate_test "Generate ray for pixel at (0, 0)" camera1 0. 0. ray_o
+  ]
+
 let suite =
   "test suite for Raycaml"  >::: List.flatten [
     vector_tests;
+    camera_tests;
   ]
 
 let _ = run_test_tt_main suite
