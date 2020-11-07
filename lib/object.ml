@@ -36,15 +36,15 @@ let intersect_sphere radius center ray mat =
   let p = Vector.( - ) (Ray.origin ray) center in
 
   let a = Vector.dot_prod d d in
-  let b = (Vector.dot_prod p d) *. 2. in
-  let c = Vector.dot_prod p p -. (radius *. radius) in
+  let b = 2. *. (Vector.dot_prod p d) in
+  let c = (Vector.dot_prod p p) -. (radius *. radius) in
 
   let dt2 = (b *. b) -. (4. *. a *. c) in
 
   if dt2 < 0. then 
     None
   else 
-    let dt = dt2 *. dt2 in
+    let dt = Float.sqrt dt2 in
 
     let t0 = (-.(b +. dt)) /. (2. *. a) in
     let t1 = (-.(b -. dt)) /. (2. *. a) in
