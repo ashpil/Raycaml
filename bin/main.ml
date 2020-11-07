@@ -16,47 +16,42 @@
    - three values for red green and blue, %256 to be within 255 bounds
 *)
 
-open Printf
 open Raycaml
 
 let file = "example.ppm" (* file name *)
-let width = "300"
-let height = "200" 
-let max_color = "255" 
-let header = "P3" 
+let width = 300
+let height = 200
 let zero_vector = Vector.create 0. 0. 0.
 let unit_forward = Vector.create 1. 0. 0.
-let ten_forward = Vector.create 10. 0. 0.
+let three_forward = Vector.create 3. 0. 0.
 let unit_up = Vector.create 0. 1. 0.
 let material = Material.create_dielectric 5.
 let bg_color = Vector.create 19. 32. 190.
 let camera = Camera.create zero_vector unit_forward (3./.2.) unit_up 90.
-let sphere = Object.create_sphere 1. ten_forward material
-let scene = Scene.create [sphere] camera bg_color
+let sphere = Object.create_sphere 1. three_forward material
+let scene = Scene.create [sphere] bg_color
 
 let () =
   let oc = open_out file in    (* create or truncate file, return channel *)
-  fprintf oc "%s\n" header; (* write header of file *)  
-  fprintf oc "%s " width; (* write horizontal dimension of image *)  
-  fprintf oc "%s\n" height; (* write vertical dimension of image *)  
-  fprintf oc "%s\n" max_color; 
+  Printf.fprintf oc "P6\n%d %d\n255\n" width height;
 
-  for i = 0 to (int_of_string width) do (* write each row *)
-    for j = 0 to (int_of_string height) do (* write each pixel in a row *)
-      let v = ((float_of_int i) +. 0.5) /. (float_of_string height) in
-      let u = ((float_of_int j) +. 0.5) /. (float_of_string width) in
+  for i = 0 to pred height do (* write each row *)
+    for j = 0 to pred width do (* write each pixel in a row *)
+      let v = ((float_of_int i) +. 0.5) /. (float_of_int height) in
+      let u = ((float_of_int j) +. 0.5) /. (float_of_int width) in
       let ray = Camera.generate_ray camera u v in
       match Scene.intersect ray scene with
       | None -> 
-        fprintf oc "%s " "19"; (* red *)
-        fprintf oc "%s " "132"; (* green *)
-        fprintf oc "%s     " "255"; (* blue *)
+        output_char oc (char_of_int 0); 
+        output_char oc (char_of_int 0); 
+        output_char oc (char_of_int 0); 
       | Some(_) ->
-        fprintf oc "%s " "255";
-        fprintf oc "%s " "255";
-        fprintf oc "%s     " "255";
+        output_char oc (char_of_int 255); 
+        output_char oc (char_of_int 255); 
+        output_char oc (char_of_int 255);
     done 
   done;
 
 
+  output_char oc '\n';
   close_out oc; (* flush and close the channel *)
