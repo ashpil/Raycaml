@@ -1,22 +1,15 @@
 open Yojson.Basic.Util
 
-type t = 
-  | Lambertian of Vector.t
-  | Metal of Vector.t * float
-  | Dielectric of float
+type t = {
+  diffuse : Vector.t;
+  spec_co : Vector.t;
+  spec_exp : float;
+  mirror : Vector.t;
+  ambient : Vector.t;
+}
 
-let create_dielectric f = Dielectric f
+let create diffuse spec_co spec_exp mirror ambient = 
+  {diffuse; spec_co; spec_exp; mirror; ambient;}
 
-let from_json json =
-  match json |> member "type" |> to_string with 
-  | "lambertian" -> Lambertian (json |> member "vec" |> Vector.from_json)
-  | "metal" -> 
-    Metal (json |> member "vec" |> Vector.from_json,
-           json |> member "float" |> to_float)
-  | "dielectric" -> Dielectric (json |> member "float" |> to_float)
-  | _ -> failwith "unknown material type"
+let from_json json = failwith "fix me pls"
 
-let scatter material (ray : Ray.t) = match material with
-  | Lambertian vec ->  failwith "Unimplemented"
-  | Metal (vec, flo) -> failwith "Unimplemented"
-  | Dielectric refraction -> failwith "Unimplemented"

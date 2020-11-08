@@ -21,14 +21,14 @@ open Raycaml
 let file = "example.ppm" (* file name *)
 let width = 300
 let height = 200
-let zero_vector = Vector.create 0. 0. 0.
+let zero = Vector.create 0. 0. 0.
 let unit_forward = Vector.create 1. 0. 0.
 let three_forward = Vector.create 3. 0. 0.
 let unit_up = Vector.create 0. 1. 0.
-let material = Material.create_dielectric 5.
+let mat = Material.create zero zero 5. zero zero
 let bg_color = Vector.create 19. 32. 190.
-let camera = Camera.create zero_vector unit_forward (3./.2.) unit_up 90.
-let sphere = Object.create_sphere 1. three_forward material
+let camera = Camera.create zero unit_forward (3./.2.) unit_up 90.
+let sphere = Object.create_sphere 1. three_forward mat
 let scene = Scene.create [sphere] bg_color
 
 let () =
@@ -55,3 +55,4 @@ let () =
 
   output_char oc '\n';
   close_out oc; (* flush and close the channel *)
+
