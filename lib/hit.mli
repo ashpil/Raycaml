@@ -11,3 +11,12 @@ val distance : t -> float
 (** [dir hit] is the direction that the ray that created this hit was coming from *)
 val dir : t -> Vector.t
 
+(** [point hit] is the point on the object that the ray hit *)
+val point : t -> Vector.t
+
+(** [mat hit] is the material on the object that the ray hit *)
+val mat : t -> Material.t
+
+(** [norm hit] is the normal of the hit *)
+val norm : t -> Vector.t
+
