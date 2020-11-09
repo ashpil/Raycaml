@@ -29,7 +29,7 @@ let mat = function
 let hit_from_t ray center t material =
     let point = Vector.( + ) (Ray.origin ray) (Vector.( * ) (Ray.dir ray) t) in
     let normal = center |> Vector.( - ) point |> Vector.unit_vector in
-    Hit.create t point normal material
+    Hit.create t point normal (Ray.dir ray) material
 
 let intersect_sphere radius center ray mat =
   let d = Ray.dir ray in
