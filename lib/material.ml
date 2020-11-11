@@ -18,3 +18,7 @@ let from_json json = {
   mirror = json |> member "mirror" |> Vector.from_json;
   ambient = json |> member "ambient" |> Vector.from_json;
 }
+
+let specular angle {diffuse; spec_co; spec_exp; _ } =
+  Vector.add diffuse (Vector.mult_constant spec_co (angle ** spec_exp))
+

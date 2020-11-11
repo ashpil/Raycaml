@@ -35,11 +35,14 @@ let zero = Vector.create 0. 0. 0.
 let unit_forward = Vector.create 1. 0. 0.
 let three_forward = Vector.create 3. 0. 0.
 let unit_up = Vector.create 0. 1. 0.
-let mat = Material.create zero zero 5. zero zero
-let bg_color = Vector.create 19. 32. 190.
+let unit_all = Vector.create 1. 1. 1.
+let half = Vector.create 0.5 0.5 0.5
+let mat = Material.create half half 5. half half
+let bg_color = Vector.create 0.10 0.45 0.79
 let camera = Camera.create zero unit_forward (3./.2.) unit_up 90.
 let sphere = Object.create_sphere 1. three_forward mat
 let scene = Scene.create [sphere] bg_color
+let light = Light.create_point unit_all unit_all
 
 let () =
   let oc = open_out file_json in    (* create or truncate file, return channel *)
@@ -51,14 +54,15 @@ let () =
       let u = ((float_of_int j) +. 0.5) /. (float_of_int width) in
       let ray = Camera.generate_ray camera_json u v in
       match Scene.intersect ray scene_json with
+      | Some(hit) ->
+        let color = Light.illuminate hit scene light in
+        output_char oc (char_of_int (int_of_float ((Vector.get_x color) *. 255.))); 
+        output_char oc (char_of_int (int_of_float ((Vector.get_y color) *. 255.))); 
+        output_char oc (char_of_int (int_of_float ((Vector.get_z color) *. 255.))); 
       | None -> 
-        output_char oc (char_of_int 0); 
-        output_char oc (char_of_int 0); 
-        output_char oc (char_of_int 0); 
-      | Some(_) ->
-        output_char oc (char_of_int 255); 
-        output_char oc (char_of_int 255); 
-        output_char oc (char_of_int 255);
+        output_char oc (char_of_int (int_of_float ((Vector.get_x bg_color) *. 255.))); 
+        output_char oc (char_of_int (int_of_float ((Vector.get_y bg_color) *. 255.))); 
+        output_char oc (char_of_int (int_of_float ((Vector.get_z bg_color) *. 255.))); 
     done 
   done;
 
