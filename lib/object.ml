@@ -3,8 +3,8 @@ open Yojson.Basic.Util
 (** The [object] is a shape that exists
     in the scene and has properties. *)
 type t =
-    | Sphere of { radius: float; center: Vector.t; material: Material.t }
-    | Triangle of { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
+  | Sphere of { radius: float; center: Vector.t; material: Material.t }
+  | Triangle of { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
 
 let create_sphere radius center material = Sphere { radius; center; material }
 
@@ -12,14 +12,16 @@ let create_sphere radius center material = Sphere { radius; center; material }
 let from_json json =
   match json |> member "type" |> to_string with 
   | "sphere" -> Sphere {
-    radius = json |> member "radius" |> to_float;
-    material = json |> member "material" |> Material.from_json;
-    center = json |> member "center" |> Vector.from_json;
-  }
+      radius = json |> member "radius" |> to_float;
+      material = json |> member "material" |> Material.from_json;
+      center = json |> member "center" |> Vector.from_json;
+    }
   | "triangle" -> Triangle {
-    vertices = (json |> member "vertex1" |> Vector.from_json, json |> member "vertex2" |> Vector.from_json, json |> member "vertex3" |> Vector.from_json);
-    material = json |> member "material" |> Material.from_json;
-  }
+      vertices = (json |> member "vertex1" |> Vector.from_json, 
+                  json |> member "vertex2" |> Vector.from_json, 
+                  json |> member "vertex3" |> Vector.from_json);
+      material = json |> member "material" |> Material.from_json;
+    }
   | _ -> failwith "unknown object type"
 
 let mat = function 
@@ -27,13 +29,13 @@ let mat = function
   | Triangle { material; _ } -> material
 
 let hit_from_t ray center t material =
-    let point = Vector.( + ) (Ray.origin ray) (Vector.( * ) (Ray.dir ray) t) in
-    let normal = center |> Vector.( - ) point |> Vector.unit_vector in
-    Hit.create t point normal material
+  let point = Vector.add (Ray.origin ray) (Vector.mult_constant (Ray.dir ray) t) in
+  let normal = center |> Vector.minus point |> Vector.unit_vector in
+  Hit.create t point normal material
 
 let intersect_sphere radius center ray mat =
   let d = Ray.dir ray in
-  let p = Vector.( - ) (Ray.origin ray) center in
+  let p = Vector.minus (Ray.origin ray) center in
 
   let a = Vector.dot_prod d d in
   let b = 2. *. (Vector.dot_prod p d) in

@@ -1,11 +1,12 @@
 type t = { origin : Vector.t;
-        direction : Vector.t;
-        start : float;
-        finish : float option }
+           direction : Vector.t;
+           start : float;
+           finish : float option }
 
 let create origin direction = {origin; direction; start = 0.; finish = None}
 
-let evaluate ray magnitude = Vector.(ray.origin + ray.direction * magnitude)
+let evaluate ray magnitude = Vector.add ray.origin 
+    (Vector.mult_constant ray.direction magnitude)
 
 let dir ray = ray.direction
 

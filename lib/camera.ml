@@ -1,3 +1,5 @@
+open Yojson.Basic.Util
+
 type t = 
   {origin : Vector.t;
    target: Vector.t;
@@ -8,23 +10,22 @@ type t =
 let create origin target aspect_ratio vertical vfov =
   { origin; target; aspect_ratio; vertical; vfov; }
 
-(* Not actually useful at the moment, just dummy function so we can test scenes *)
-let from_json json = 
-  let v = Vector.origin in
-  { origin = v; target = v; aspect_ratio = 0.0; vertical = v; vfov = 0.0}
+let from_json json = {
+  origin = json |> member "origin" |> Vector.from_json;
+  target =  json |> member "target" |> Vector.from_json;
+  aspect_ratio =  json |> member "aspect_ratio" |> to_float;
+  vertical = json |> member "vertical" |> Vector.from_json;
+  vfov = json |> member "vfov" |> to_float;
+}
 
 let generate_ray camera x y = 
-  let w = Vector.unit_vector (Vector.(-) camera.origin camera.target) in
+  let w = Vector.unit_vector (Vector.minus camera.origin camera.target) in
   let u = Vector.unit_vector (Vector.cross_prod camera.vertical w) in
   let v = Vector.unit_vector (Vector.cross_prod w u) in
   let height = 2. *. Float.tan(camera.vfov *. Float.pi /. 360.) in 
   let width = camera.aspect_ratio *. height in  
-(*  let d = Vector.length camera.origin in
-  let x_comp = Vector.length (Vector.( * ) u (width *. x)) in 
-  let y_comp = Vector.length (Vector.( * ) v (height *.y)) in 
-  let z_comp =  Vector.length (Vector.( * ) w (-.d)) in
-  let direction = Vector.create x_comp y_comp z_comp in *)
   let x = width *. (x -. 0.5) in
   let y = height *. (y -. 0.5) in
-  let direction = Vector.( - ) (Vector.( + ) (Vector.( * ) u x) (Vector.( * ) v y)) w in
+  let direction = Vector.minus (Vector.add (Vector.mult_constant u x) 
+                                  (Vector.mult_constant v y)) w in
   Ray.create camera.origin direction 

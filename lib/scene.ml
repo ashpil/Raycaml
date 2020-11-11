@@ -2,7 +2,10 @@ open Yojson.Basic.Util
 
 type t = { objects: Object.t list; bg_color: Vector.t }
 
-let from_json json = failwith "todo"
+let from_json json = {
+  objects = json |>  member "objects" |> to_list |> List.map Object.from_json;
+  bg_color = json |> member "bg_color" |> Vector.from_json 
+}
 
 let create objects bg_color = { objects; bg_color }
 

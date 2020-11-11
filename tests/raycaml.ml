@@ -11,11 +11,11 @@ let get_test name vec func expect =
 
 let sub_test name vec1 vec2 expect =
   name >:: fun _ ->
-    assert_equal expect (Vector.(-) vec1 vec2)
+    assert_equal expect (Vector.minus vec1 vec2)
 
 let add_test name vec1 vec2 expect =
   name >:: fun _ ->
-    assert_equal expect (Vector.(+) vec1 vec2)
+    assert_equal expect (Vector.add vec1 vec2)
 
 let mult_test name vec1 vec2 expect =
   name >:: fun _ ->
@@ -27,7 +27,7 @@ let div_const_test name vec c expect =
 
 let mult_const_test name vec c expect =
   name >:: fun _ ->
-    assert_equal expect (Vector.( * ) vec c)
+    assert_equal expect (Vector.mult_constant vec c)
 
 let dot_prod_test name vec1 vec2 expect =
   name >:: fun _ ->
@@ -100,21 +100,24 @@ let in_bounds_test name d ray expect =
 let ray1_origin = Vector.create 0. 0. 0.
 let ray1_direction = Vector.create 1. 0. 0.
 let ray1 = Ray.create ray1_origin ray1_direction
-let evaluated_vector = Vector.(+) ray1_origin (Vector.( * ) ray1_direction 2.)
+let evaluated_vector = Vector.add ray1_origin 
+    (Vector.mult_constant ray1_direction 2.)
 
 let ray_tests = 
   [
     evaluate_test "evaluate with magnitude 2" ray1 2. evaluated_vector;
     dir_test "direction of ray1" ray1 ray1_direction;
     origin_test "origin of ray1" ray1 ray1_origin;
-
+    in_bounds_test "value in bounds of ray1" 0.5 ray1 true;
+    in_bounds_test "value out of bounds of ray1" 500000. ray1 false;
   ]
 
 let vector_eye = Vector.create 10. 4.2 6.
 let vertical = Vector.create 0. 1. 0.
 let camera1 = Camera.create vector_eye vector_o 1.6 vertical 36.87
-let dir_vector = Vector.create 0. 0. 12.3951603459
+let dir_vector = Vector.create 0. 0. (Vector.length vector_eye)
 let ray_o = Ray.create vector_eye dir_vector
+
 
 let print_ray ray = 
   "origin vector: " ^ string_of_float (Vector.get_x (Ray.origin ray)) ^ " " ^
@@ -130,7 +133,8 @@ let generate_test name camera x y expect =
 
 let camera_tests = 
   [
-    generate_test "Generate ray for pixel at (0, 0)" camera1 0. 0. ray_o
+    generate_test "Generate ray for pixel at (0., 0.) with camera1" camera1 
+      0. 0. ray_o;
   ]
 
 let suite =

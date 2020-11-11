@@ -26,19 +26,19 @@ let get_y t = t.y
 
 let get_z t = t.z 
 
-let ( - ) t1 t2 = {
+let minus t1 t2 = {
   x = t1.x -. t2.x;
   y = t1.y -. t2.y;
   z = t1.z -. t2.z;
 }
 
-let ( + ) t1 t2 = {
+let add t1 t2 = {
   x = t1.x +. t2.x;
   y = t1.y +. t2.y;
   z = t1.z +. t2.z;
 }
 
-let ( * ) t c = {
+let mult_constant t c = {
   x = t.x *. c;
   y = t.y *. c;
   z = t.z *. c;

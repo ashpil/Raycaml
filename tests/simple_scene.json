@@ -2,35 +2,91 @@
   "objects": [
     {
       "type": "sphere",
-      "radius": 5.0,
+      "radius": 0.5,
       "material": {
-        "type": "lambertian",
-        "vec": {"x": 0.0, "y": 0.0, "z": 0.0}
+        "diffuse": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "spec_co": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "spec_exp": 5.0,
+        "mirror": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "ambient": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       },
-      "position": {"x": 0.0, "y": 0.0, "z": 0.0}
+      "center": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
     },
     {
-      "type": "box",
-      "size": {"x": 1.0, "y": 1.0, "z": 1.0},
+      "type": "sphere",
+      "radius": 0.7,
       "material": {
-        "type": "metal",
-        "vec": {"x": 0.0, "y": 0.0, "z": 0.0},
-        "float": 1.0
+        "diffuse": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "spec_co": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "spec_exp": 5.0,
+        "mirror": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "ambient": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       },
-      "position": {"x": 0.0, "y": 0.0, "z": 0.0}
-    },
-    {
-      "type": "cylinder",
-      "radius": 1.0,
-      "height": 5.0,
-      "material": {
-        "type": "dielectric",
-        "float": 0.0
-      },
-      "position": {"x": 0.0, "y": 0.0, "z": 0.0}
+      "center": {
+        "x": 3.0,
+        "y": 1.0,
+        "z": 1.0
+      }
     }
   ],
   "camera": {
-
+    "origin": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "target": {
+      "x": 1.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "aspect_ratio": 1.5,
+    "vertical": {
+      "x": 0.0,
+      "y": 1.0,
+      "z": 0.0
+    },
+    "vfov": 90.0
+  },
+  "bg_color": {
+    "x": 19.0,
+    "y": 32.0,
+    "z": 190.0
   }
 }

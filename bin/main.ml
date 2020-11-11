@@ -15,8 +15,18 @@
      -- inner loop = each pixel in that row (columns)
    - three values for red green and blue, %256 to be within 255 bounds
 *)
-
+open Yojson.Basic.Util
 open Raycaml
+
+(** getting custom scene from JSON file *)
+let () = print_string "Please input the name of your JSON file: " 
+let () = print_newline ()
+let input = read_line ()  (* can get from tests/simple_scene.json *)
+let input_json = Yojson.Basic.from_file input
+let camera_json = input_json |> member "camera" |> Camera.from_json
+let scene_json = input_json |> Scene.from_json
+let file_json = "exJSONinput.ppm"
+
 
 let file = "example.ppm" (* file name *)
 let width = 300
@@ -32,15 +42,15 @@ let sphere = Object.create_sphere 1. three_forward mat
 let scene = Scene.create [sphere] bg_color
 
 let () =
-  let oc = open_out file in    (* create or truncate file, return channel *)
+  let oc = open_out file_json in    (* create or truncate file, return channel *)
   Printf.fprintf oc "P6\n%d %d\n255\n" width height;
 
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
       let v = ((float_of_int i) +. 0.5) /. (float_of_int height) in
       let u = ((float_of_int j) +. 0.5) /. (float_of_int width) in
-      let ray = Camera.generate_ray camera u v in
-      match Scene.intersect ray scene with
+      let ray = Camera.generate_ray camera_json u v in
+      match Scene.intersect ray scene_json with
       | None -> 
         output_char oc (char_of_int 0); 
         output_char oc (char_of_int 0); 
