@@ -28,6 +28,9 @@ setup.log
 # Local OPAM switch
 _opam/
 
+# Test ppm files
+**.ppm
+
 # Random
 .DS_Store
 src.zip

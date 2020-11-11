@@ -11,6 +11,8 @@ let create objects bg_color = { objects; bg_color }
 
 let objects scene = scene.objects
 
+let bg_color scene = scene.bg_color
+
 let cmp_hit h1 h2 = Stdlib.compare (Hit.distance h1) (Hit.distance h2)
 
 let get_greater_hit h1 h2 =
@@ -22,3 +24,4 @@ let intersect ray scene =
   scene.objects
   |> List.map (fun obj -> Object.intersect ray obj)
   |> List.fold_left (get_greater_hit) None
+

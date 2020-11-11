@@ -23,37 +23,27 @@ let () = print_string "Please input the name of your JSON file: "
 let () = print_newline ()
 let input = read_line ()  (* can get from tests/simple_scene.json *)
 let input_json = Yojson.Basic.from_file input
-let camera_json = input_json |> member "camera" |> Camera.from_json
-let scene_json = input_json |> Scene.from_json
-let file_json = "exJSONinput.ppm"
+let camera = input_json |> member "camera" |> Camera.from_json
+let scene = input_json |> Scene.from_json
+let bg_color = Scene.bg_color scene
+let file = (input |> String.split_on_char '.' |> List.hd) ^ ".ppm"
 
-
-let file = "example.ppm" (* file name *)
-let width = 300
-let height = 200
-let zero = Vector.create 0. 0. 0.
-let unit_forward = Vector.create 1. 0. 0.
-let three_forward = Vector.create 3. 0. 0.
-let unit_up = Vector.create 0. 1. 0.
 let unit_all = Vector.create 1. 1. 1.
-let half = Vector.create 0.5 0.5 0.5
-let mat = Material.create half half 5. half half
-let bg_color = Vector.create 0.10 0.45 0.79
-let camera = Camera.create zero unit_forward (3./.2.) unit_up 90.
-let sphere = Object.create_sphere 1. three_forward mat
-let scene = Scene.create [sphere] bg_color
 let light = Light.create_point unit_all unit_all
 
+let width = 300
+let height = 200
+
 let () =
-  let oc = open_out file_json in    (* create or truncate file, return channel *)
+  let oc = open_out file in    (* create or truncate file, return channel *)
   Printf.fprintf oc "P6\n%d %d\n255\n" width height;
 
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
       let v = ((float_of_int i) +. 0.5) /. (float_of_int height) in
       let u = ((float_of_int j) +. 0.5) /. (float_of_int width) in
-      let ray = Camera.generate_ray camera_json u v in
-      match Scene.intersect ray scene_json with
+      let ray = Camera.generate_ray camera u v in
+      match Scene.intersect ray scene with
       | Some(hit) ->
         let color = Light.illuminate hit scene light in
         output_char oc (char_of_int (int_of_float ((Vector.get_x color) *. 255.))); 
