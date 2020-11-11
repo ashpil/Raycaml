@@ -45,7 +45,7 @@ let () =
       let ray = Camera.generate_ray camera u v in
       match Scene.intersect ray scene with
       | Some(hit) ->
-        let color = Light.illuminate hit scene light in
+        let color = Light.illuminate hit scene_json light in
         output_char oc (char_of_int (int_of_float ((Vector.get_x color) *. 255.))); 
         output_char oc (char_of_int (int_of_float ((Vector.get_y color) *. 255.))); 
         output_char oc (char_of_int (int_of_float ((Vector.get_z color) *. 255.))); 
