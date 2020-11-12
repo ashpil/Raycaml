@@ -112,15 +112,17 @@ let ray_tests =
     in_bounds_test "value out of bounds of ray1" 500000. ray1 false;
   ]
 
-let vector_eye = Vector.create 10. 4.2 6.
+let vector_eye = Vector.create 1. 0. 0.
 let vertical = Vector.create 0. 1. 0.
-let camera1 = Camera.create vector_eye vector_o 1.6 vertical 36.87
-let dir_vector = Vector.create 0. 0. (Vector.length vector_eye)
+let camera1 = Camera.create vector_eye vector_o 1. vertical 90.
+let dir_vector = Vector.create (-1.) 0. 0.
 let ray_o = Ray.create vector_eye dir_vector
 
-let vector_eye2 = Vector.create (-10.) 0. 0.
-let camera2 = Camera.create vector_eye2 vector_o 1.6 vertical 36.87
-let ray_1 = Ray.create vector_eye2 dir_vector
+let vector_eye2 = Vector.create 1. (-1.) 0.
+let vertical2 = Vector.create 0. 1. 0.
+let camera2 = Camera.create vector_eye2 vector_o 1. vertical2 90.
+let dir_vector2 = Vector.create (-1.) 1. 0.
+let ray_o2 = Ray.create vector_eye2 (Vector.unit_vector dir_vector2)
 
 let print_ray ray = 
   "origin vector: " ^ string_of_float (Vector.get_x (Ray.origin ray)) ^ " " ^
@@ -136,28 +138,27 @@ let generate_test name camera x y expect =
 
 let camera_tests = 
   [
-    generate_test "Generate ray for pixel at (0, 0)" camera1 0. 0. ray_o;
-    generate_test "Generate ray for pixel at (0, 0) from different eye" 
-      camera2 0. 0. ray_1;
-    (* Ignore this test if it doesn't pass *)
+    generate_test "Generate ray for pixel at (0.5, 0.5), eye at (1, 0, 0)" 
+      camera1 0.5 0.5 ray_o;
+    generate_test "Generate ray for pixel at (0.5, 0.5), eye at (1, -1, 0)" 
+      camera2 0.5 0.5 ray_o2;
   ]
 
 let material1 = Material.create vector_o vector_o 0. vector_o vector_o
 let vector_1 = Vector.create 2.0 0. 0.
+let vector_2 = Vector.create 1.0 0. 0.
 let sphere1 = Object.create_sphere 1.0 vector_1 material1 
-let vector_hit1 = Vector.create 1.0 0. 0.
-let ray_hit1 = Ray.create vector_o vector_1
-let hit1 = Hit.create 1.0 vector_hit1 (Vector.unit_vector vector_hit1) 
-    vector_hit1 material1
+let ray_hit1 = Ray.create vector_o vector_2
 
 let intersect_test name ray an_object expect = 
   name >:: fun _ ->
-    assert_equal expect (Object.intersect ray an_object)
+    assert_equal expect (Object.intersect ray an_object |> Option.get |> 
+                         Hit.distance) ~printer:string_of_float
 
 let intersection_tests =
   [
     intersect_test "ray from origin and sphere of radius 1 @(1, 0 ,0)" ray_hit1 
-      sphere1 (Some hit1);
+      sphere1 1.0;
   ]
 
 let suite =
