@@ -9,9 +9,10 @@ build:
 	@echo ""
 
 run:
+	@[ "${scene}" ] || ( echo "\033[31musage:\033[0m do \`\033[34mmake run scene=\033[93m[path to scene json]\033[0m\` to indicate scene to be rendered"; exit 1 )
 	@dune build
 	@echo ""
-	@dune exec $(RUN)
+	@dune exec -- $(RUN) $(scene) $(width)
 
 test:
 	@dune build
@@ -26,3 +27,4 @@ clean:
 zip:
 	@echo -e "\033[31mWARNING:\033[0m Doesn't zip anything not commited to git.\n\033[36msrc.zip made!\033[0m"
 	@git archive -o src.zip HEAD
+
