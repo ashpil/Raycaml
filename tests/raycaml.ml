@@ -158,13 +158,13 @@ let intersection_tests =
   [
     intersect_test "ray from origin and sphere of radius 1 @(1, 0 ,0)" ray_hit1 
       sphere1 (Some hit1);
-
   ]
 
 let suite =
   "test suite for Raycaml"  >::: List.flatten [
     vector_tests;
     camera_tests;
+    intersection_tests;
   ]
 
 let _ = run_test_tt_main suite
