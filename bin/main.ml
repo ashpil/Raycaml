@@ -24,12 +24,10 @@ let () = print_newline ()
 let input = read_line ()  (* can get from tests/simple_scene.json *)
 let input_json = Yojson.Basic.from_file input
 let camera = input_json |> member "camera" |> Camera.from_json
+let light = input_json |> member "light" |> Light.from_json
 let scene = input_json |> Scene.from_json
 let bg_color = Scene.bg_color scene
 let file = (input |> String.split_on_char '.' |> List.hd) ^ ".ppm"
-
-let unit_all = Vector.create 1. 1. 1.
-let light = Light.create_point unit_all unit_all
 
 let width = 300
 let height = 200
@@ -45,7 +43,7 @@ let () =
       let ray = Camera.generate_ray camera u v in
       match Scene.intersect ray scene with
       | Some(hit) ->
-        let color = Light.illuminate hit scene_json light in
+        let color = Light.illuminate hit scene light in
         output_char oc (char_of_int (int_of_float ((Vector.get_x color) *. 255.))); 
         output_char oc (char_of_int (int_of_float ((Vector.get_y color) *. 255.))); 
         output_char oc (char_of_int (int_of_float ((Vector.get_z color) *. 255.))); 

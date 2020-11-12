@@ -7,7 +7,7 @@ type t = { intensity : Vector.t; position: Vector.t option }
 
 let from_json json = {
   intensity = json |> member "intensity" |> Vector.from_json;
-  position = Some (json |> member "position" |> Vector.from_json);
+  position = json |> member "position" |> to_option (fun x -> Vector.from_json x);
 }
 
 let create_point intensity position = { intensity; position = Some position }
