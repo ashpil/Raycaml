@@ -18,6 +18,8 @@ let from_json json = {
   vfov = json |> member "vfov" |> to_float;
 }
 
+let get_aspect {aspect_ratio; _} = aspect_ratio
+
 let generate_ray camera x y = 
   let w = Vector.unit_vector (Vector.minus camera.origin camera.target) in
   let u = Vector.unit_vector (Vector.cross_prod camera.vertical w) in
@@ -29,3 +31,4 @@ let generate_ray camera x y =
   let direction = Vector.minus (Vector.add (Vector.mult_constant u x) 
                                   (Vector.mult_constant v y)) w in
   Ray.create camera.origin direction 
+

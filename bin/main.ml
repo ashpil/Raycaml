@@ -19,22 +19,28 @@ open Yojson.Basic.Util
 open Raycaml
 
 (** getting custom scene from JSON file *)
-let () = print_string "Please input the name of your JSON file: " 
-let () = print_newline ()
-let input = read_line ()  (* can get from tests/simple_scene.json *)
-let input_json = Yojson.Basic.from_file input
-let camera = input_json |> member "camera" |> Camera.from_json
-let light = input_json |> member "light" |> Light.from_json
-let scene = input_json |> Scene.from_json
-let bg_color = Scene.bg_color scene
-let file = (input |> String.split_on_char '.' |> List.hd) ^ ".ppm"
-
-let width = 300
-let height = 200
 
 let () =
+  (* Ask for json file, if didn't get one, print message and exit *)
+  let input_json =
+    try Yojson.Basic.from_file (Sys.argv.(1))
+    with _ -> print_endline "please pass a json file with a valid scene. ex: `raycaml scene.json`"; exit 1
+  in
+  let camera = input_json |> member "camera" |> Camera.from_json in
+  let light = input_json |> member "light" |> Light.from_json in
+  let scene = input_json |> Scene.from_json in
+  let bg_color = Scene.bg_color scene in
+  let file = (Sys.argv.(1) |> String.split_on_char '.' |> List.hd) ^ ".ppm" in
+
+  (* If a commandline argument integer was passed after the scene, use it as the width.
+   * Otherwise, default is 320 *)
+  let width =
+    try int_of_string Sys.argv.(2)
+    with _ -> 320
+  in
+  let height = int_of_float ((float_of_int width) /. (Camera.get_aspect camera)) in
+
   let oc = open_out file in    (* create or truncate file, return channel *)
-  Printf.fprintf oc "P6\n%d %d\n255\n" width height;
 
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
