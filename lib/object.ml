@@ -4,7 +4,8 @@ open Yojson.Basic.Util
     in the scene and has properties. *)
 type t =
   | Sphere of { radius: float; center: Vector.t; material: Material.t }
-  | Triangle of { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
+  | Triangle of 
+    { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
 
 let create_sphere radius center material = Sphere { radius; center; material }
 
@@ -29,7 +30,8 @@ let mat = function
   | Triangle { material; _ } -> material
 
 let hit_from_t ray center t material =
-  let point = Vector.add (Ray.origin ray) (Vector.mult_constant (Ray.dir ray) t) in
+  let point = Vector.add (Ray.origin ray) 
+    (Vector.mult_constant (Ray.dir ray) t) in
   let normal = center |> Vector.minus point |> Vector.unit_vector in
   Hit.create t point normal (Ray.dir ray) material
 
@@ -56,5 +58,6 @@ let intersect_sphere radius center ray mat =
 
 
 let intersect ray = function
-  | Sphere { radius; center; material } -> intersect_sphere radius center ray material
+  | Sphere { radius; center; material } -> 
+    intersect_sphere radius center ray material
   | Triangle { vertices; material; } -> failwith "todo"

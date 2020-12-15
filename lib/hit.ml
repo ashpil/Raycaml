@@ -6,7 +6,8 @@ type t = {
   material : Material.t
 }
 
-let create t point normal direction material = {t; point; normal; direction; material }
+let create t point normal direction material = 
+  {t; point; normal; direction; material }
 
 let distance { t; _ } = t  
 

@@ -17,6 +17,7 @@
 *)
 open Yojson.Basic.Util
 open Raycaml
+open Printf
 
 (** getting custom scene from JSON file *)
 
@@ -42,6 +43,11 @@ let () =
 
   let oc = open_out file in    (* create or truncate file, return channel *)
 
+  fprintf oc "%s\n" "P6"; (* write header of file *)  
+  fprintf oc "%s " (string_of_int width); (* write horizontal dimension of image *)  
+  fprintf oc "%s\n" (string_of_int height); (* write vertical dimension of image *)  
+  fprintf oc "%s\n" "255";
+
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
       let v = ((float_of_int i) +. 0.5) /. (float_of_int height) in
@@ -63,4 +69,3 @@ let () =
 
   output_char oc '\n';
   close_out oc; (* flush and close the channel *)
-
