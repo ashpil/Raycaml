@@ -43,10 +43,7 @@ let () =
 
   let oc = open_out file in    (* create or truncate file, return channel *)
 
-  fprintf oc "%s\n" "P6"; (* write header of file *)  
-  fprintf oc "%s " (string_of_int width); (* write horizontal dimension of image *)  
-  fprintf oc "%s\n" (string_of_int height); (* write vertical dimension of image *)  
-  fprintf oc "%s\n" "255";
+  Printf.fprintf oc "P6\n%d %d\n255\n" width height; 
 
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
