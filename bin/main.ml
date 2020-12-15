@@ -42,6 +42,8 @@ let () =
 
   let oc = open_out file in    (* create or truncate file, return channel *)
 
+  Printf.fprintf oc "P6\n%d %d\n255\n" width height; 
+
   for i = 0 to pred height do (* write each row *)
     for j = 0 to pred width do (* write each pixel in a row *)
       let v = ((float_of_int i) +. 0.5) /. (float_of_int height) in
