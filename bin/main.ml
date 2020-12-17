@@ -17,7 +17,6 @@
 *)
 open Yojson.Basic.Util
 open Raycaml
-open Printf
 
 (** getting custom scene from JSON file *)
 
