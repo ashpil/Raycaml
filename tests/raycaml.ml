@@ -1,3 +1,39 @@
+(* may need to rename this file "test.ml" 
+
+   TEST PLAN: 
+
+   Our approach to testing was to test as many of the functions in the modules 
+   as feasible with OUnit tests. Thus, included in our test suite are tests for 
+   the Light, Vector, Camera, Ray, Hit, Material, Object, and Scene modules. 
+   Essentially, we tested every function necessary in every module. We developed 
+   test cases through both black box and glass box testing; for some cases, we 
+   only considered what the function was specified to take in, such as two 
+   vectors, while for other functions we had to look at the actual code to 
+   devise cases.
+
+   The functions in modules that were very simple, such as merely returning the 
+   property of a type, were tested implicitly, but not explicity using OUnit, in 
+   this test suite. We also tested the conversion of the json data structure to 
+   our unique data types. 
+
+   Certain functions have fewer tests because designing these tests took
+   a lot of time and thought; for example, there are very few intersection tests
+   because thinking of the scenario to test was more difficult than say testing 
+   a function that adds two vectors. Still, we believe our test suite 
+   demonstrates the correctness of our system because it ensures that each 
+   individual part of our ray tracer is operating as it should be, returning 
+   correct values for sample inputs. 
+
+   Lastly, we conducted manual tests for correctness of the ppm file that is 
+   output by our raytracer by inputting various scenes as json files and viewing
+   the resulting image. Ensuring that each and every pixel is correct would 
+   be an arduous task, and it's also unnecessary for determining whether the 
+   system is functioning as it should be. If even one line of the code in our 
+   system were incorrect, the image would look nothing like the scene that we
+   input as a json file. So, by visually assessing whether the spheres or 
+   triangles were appearing correctly, with the proper shading, orientation, and 
+   light source, we can gather much about the correctness of our code. 
+*)
 open OUnit2
 open Raycaml
 open Yojson.Basic.Util
@@ -324,7 +360,8 @@ let material_tests =
     get_spec_test "Get specular of material of first sphere in json file with 
     angle of 1.0" 1.0 mat1_json (Vector.create (0.6) (1.0) (0.6));
     get_spec_test "Get specular of material of triangle in json file with 
-    angle of 1.0" 1.0 mat2_json (Vector.create (0.1+.0.2) (0.1+.0.2) (0.1+.0.2));
+    angle of 1.0" 1.0 mat2_json (Vector.create (0.1+.0.2) (0.1+.0.2) 
+                                   (0.1+.0.2));
   ]
 
 let light_intens1 = Vector.create (100.) (100.) (100.)
