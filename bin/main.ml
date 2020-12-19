@@ -112,11 +112,21 @@ let get_material () =
   a light source. This color value will determine the hue of the light that is 
   reflected, with x corresponding to red, y with green, and z with blue.";
   let spec_co = vector_of_string (read_line()) in 
-  print_endline "  Input the spec_exp as a float. This is the ";
+  print_endline "  Input the specular exponent as a float. This controls what
+  can be thought of as the 'shininess' of the object. The larger the number 
+  e.g. 100.0, the more focused the reflection on the object will appear, and 
+  thus it will seem shinier. The smaller the number, e.g. 1.0, the more spread 
+  out the reflection will be, causing it to appear more dull.";
   let spec_exp = float_of_string (read_line()) in 
-  print_endline "  Please input the mirror as a vector (x,y,z)";
+  print_endline "  Please input the reflective property of your object as a 
+  vector (x,y,z). Surfaces can be highly reflective, which causes many shadow 
+  rays to bounce off of them, or lowly reflective. This is broken into red,
+  green, and blue components corresponding to x, y, and z respectively.";
   let mirror = vector_of_string (read_line()) in 
-  print_endline "  Please input the ambient as a vector (x,y,z)";
+  print_endline "  Please input the ambient as a vector (x,y,z). Ambient light 
+  is the result of interactions between light sources and the objects in the 
+  scene. It appears to be uniform all over. It is also separated into red, 
+  green, and blue components.";
   let ambient = vector_of_string (read_line()) in
   Material.create diffuse spec_co spec_exp mirror ambient
 
@@ -148,7 +158,7 @@ let get_camera () =
   vector (x,y,z)"; 
   let origin = vector_of_string (read_line()) in 
   print_endline 
-  "  Next, the target of the camera will be the position that the camera will
+    "  Next, the target of the camera will be the position that the camera will
   be directly looking at. Please enter the target of the camera as a position 
   vector (x,y,z).";
   let target = vector_of_string (read_line()) in 
@@ -157,13 +167,13 @@ let get_camera () =
   image. Please enter the aspect ratio of the camera as a float.";
   let aspect_ratio = float_of_string (read_line()) in 
   print_endline 
-  "  Next, we would like the vertical vector of the camera. This 
+    "  Next, we would like the vertical vector of the camera. This 
   vertical vector is orthogonal to the camera's origin and points upwards in the
   plane of the camera. Please enter the vertical vector of the camera as a 
   vector (x,y,z).";
   let vertical = vector_of_string (read_line()) in 
   print_endline 
-  "  Lastly, for the camera, we would like the vertical field of view of the 
+    "  Lastly, for the camera, we would like the vertical field of view of the 
   camera. The vertical field of view is the angle range in radians of what the 
   camera is capable of seeing. Please enter the vertical field of view of the 
   camera as a float.";
