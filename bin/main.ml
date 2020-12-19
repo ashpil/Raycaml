@@ -18,13 +18,6 @@
 open Yojson.Basic.Util
 open Raycaml
 
-(**  #require "yojson";;
-     let myvar = Yojson.Basic.from_string "\"object\"";;
-     Yojson.Basic.to_file "exfile.json" myvar;;
-
-*)
-
-
 let create_ppm camera light scene bg_color file width height = 
   let oc = open_out file in    (* create or truncate file, return channel *)
   Printf.fprintf oc "P6\n%d %d\n255\n" width height; 
@@ -187,66 +180,70 @@ let get_camera ui =
 let get_light ui = 
   if ui = "custom" then 
     print_endline 
-      "  We will now create the lighting. To describe the lighting, we must describe
-  the intensity of the lighting as a vector where the magnitude of the intensity
-  is measured in the x, y, and z direction. Please enter the intensity of 
-  the light as a vector (x,y,z)."; 
+
+
+
+
+      e will now create the lighting. To describe the lighting, we must describe
+      the intensity of the lighting as a vector where the magnitude of the intensity
+        is measured in the x, y, and z direction. Please enter the intensity of 
+    the light as a vector (x,y,z)."; 
   let intensity = vector_of_string (read_line()) in
   print_endline "  If you would like a specific position of the light source, 
-  please enter it as a position vector (x,y,z). Otherwise, enter 'None'. 
-  Entering none will create 'ambient lighting'. "; 
+                                                              please enter it as a position vector (x,y,z). Otherwise, enter 'None'. 
+                                                                                                                         Entering none will create 'ambient lighting'. "; 
   let position = read_line() in 
   if position = "None" then Light.create_ambient intensity 
   else Light.create_point intensity (vector_of_string position)
 
 let get_scene objlist ui = 
   if ui = "custom" then 
-    print_endline 
-      "  We will now create the scene. Please enter the background color
-   as a vector (x,y,z)."; 
+  print_endline 
+  "  We will now create the scene. Please enter the background color
+                                                              as a vector (x,y,z)."; 
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
 let get_file_name ui = 
   if ui = "custom" then 
-    print_endline "  Now, you get to name your ppm file. What would you like your 
-  finished product to be called?"; 
+  print_endline "  Now, you get to name your ppm file. What would you like your 
+    finished product to be called?"; 
   read_line() ^ ".ppm"
 
 let get_width ui = 
   if ui = "custom" then 
-    print_endline "  How wide should your image be in pixels? (enter an integer)";
+  print_endline "  How wide should your image be in pixels? (enter an integer)";
   int_of_string (read_line())
 
 let get_height ui = 
   if ui = "custom" then 
-    print_endline "  What should the height of your image be in pixels? (enter an 
-  integer)"; 
+  print_endline "  What should the height of your image be in pixels? (enter an 
+                                                                           integer)"; 
   int_of_string (read_line())
 
 let rec get_objects objlist ui = 
   if ui = "custom" then
     print_endline "  Please enter a valid type of the object you would like to 
-    add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
-    already entered all of the objects you want, then type 'quit'"; 
+  add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
+             already entered all of the objects you want, then type 'quit'"; 
   let next_command = read_line() in 
   match (parse next_command) with 
   | Continue -> begin 
-      let object_type = next_command in 
-      if object_type = "Sphere" then 
-        get_objects ((get_sphere ui) :: objlist) ui 
-      else if object_type = "Triangle" then 
-        get_objects ((get_triangle ui) :: objlist) ui
-      else get_objects objlist ui
+    let object_type = next_command in 
+    if object_type = "Sphere" then 
+      get_objects ((get_sphere ui) :: objlist) ui 
+    else if object_type = "Triangle" then 
+      get_objects ((get_triangle ui) :: objlist) ui
+    else get_objects objlist ui
     end 
   | Quit -> begin 
-      let camera = get_camera ui in 
-      let light = get_light ui in 
-      let scene = get_scene objlist ui in 
-      let file_name = get_file_name ui in 
-      let width = get_width ui in 
-      let height = get_height ui in 
-      create_ppm camera light scene (Scene.bg_color scene) file_name width height
+    let camera = get_camera ui in 
+    let light = get_light ui in 
+    let scene = get_scene objlist ui in 
+    let file_name = get_file_name ui in 
+    let width = get_width ui in 
+    let height = get_height ui in 
+    create_ppm camera light scene (Scene.bg_color scene) file_name width height
     end 
   | exception Empty -> failwith "unimplemented"
 
@@ -260,7 +257,7 @@ let plain_json ui =
     let input_json =
       try Yojson.Basic.from_file (Sys.argv.(1))
       with _ -> print_endline "Please pass a json file with a valid scene. ex: 
-    `raycaml scene.json`"; exit 1
+                                                                       `raycaml scene.json`"; exit 1
     in
     let camera = input_json |> member "camera" |> Camera.from_json in
     let light = input_json |> member "light" |> Light.from_json in
@@ -283,13 +280,12 @@ let plain_json ui =
 let () = 
   print_endline 
     "  Welcome to RayCaml, our OCaml raytracer. First, select whether 
-  you would like to have a guided tour of the system, by building your very own 
-  json file from scratch, or if you'd rather simply input the name of a json 
-  file. Please enter either `custom` for the first option or `filename` for the 
-  latter to proceed.";
-  let user_choice = read_line() in 
-  try 
-    if user_choice = "custom" then build_own_json user_choice
-    else if user_choice = "filename" then plain_json user_choice
-    else raise (Failure "That is not a valid option.")
-  with Failure s -> print_endline s;() 
+                                                                                       you would like to have a guided tour of the system, by building your very own 
+                                                                                                                                 json file from scratch, or if you'd rather simply input the name of a json 
+                                                                                                                                     file. Please enter either `custom` for the first option or `filename` for the 
+let user_choice = read_line() in 
+try 
+  if user_choice = "custom" then build_own_json user_choice
+  else if user_choice = "filename" then plain_json user_choice
+  else raise (Failure "That is not a valid option.")
+with Failure s -> print_endline s;() 
