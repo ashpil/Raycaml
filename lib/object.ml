@@ -5,9 +5,11 @@ open Yojson.Basic.Util
 type t =
   | Sphere of { radius: float; center: Vector.t; material: Material.t }
   | Triangle of 
-    { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
+      { vertices: Vector.t * Vector.t * Vector.t; material: Material.t }
 
 let create_sphere radius center material = Sphere { radius; center; material }
+
+let create_triangle vertices material = Triangle { vertices; material }
 
 (* TODO: clean this up *)
 let from_json json =
@@ -31,7 +33,7 @@ let mat = function
 
 let hit_from_t ray center t material =
   let point = Vector.add (Ray.origin ray) 
-    (Vector.mult_constant (Ray.dir ray) t) in
+      (Vector.mult_constant (Ray.dir ray) t) in
   let normal = center |> Vector.minus point |> Vector.unit_vector in
   Hit.create t point normal (Ray.dir ray) material
 

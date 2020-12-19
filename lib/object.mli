@@ -10,3 +10,5 @@ val mat : t -> Material.t
 val intersect : Ray.t -> t -> Hit.t option
 
 val create_sphere : float -> Vector.t -> Material.t -> t
+
+val create_triangle : Vector.t * Vector.t * Vector.t -> Material.t -> t
