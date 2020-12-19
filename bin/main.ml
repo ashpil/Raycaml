@@ -209,19 +209,20 @@ let get_scene objlist ui =
 
 let get_file_name ui = 
   if ui = "custom" then 
-    print_endline "  Now, you get to name your ppm file. What would you like your 
-  finished product to be called?"; 
+    print_endline "  Now, you get to name your ppm file. What would you like 
+    your finished product to be called?"; 
   read_line() ^ ".ppm"
 
 let get_width ui = 
   if ui = "custom" then 
-    print_endline "  How wide should your image be in pixels? (enter an integer)";
+    print_endline 
+    "  How wide should your image be in pixels? (enter an integer)";
   int_of_string (read_line())
 
 let get_height ui = 
   if ui = "custom" then 
-    print_endline "  What should the height of your image be in pixels? (enter an 
-  integer)"; 
+    print_endline 
+    "  What should the height of your image be in pixels? (enter an integer)"; 
   int_of_string (read_line())
 
 let rec get_objects objlist ui = 
@@ -246,7 +247,8 @@ let rec get_objects objlist ui =
       let file_name = get_file_name ui in 
       let width = get_width ui in 
       let height = get_height ui in 
-      create_ppm camera light scene (Scene.bg_color scene) file_name width height
+      create_ppm camera light scene 
+      (Scene.bg_color scene) file_name width height
     end 
   | exception Empty -> failwith "unimplemented"
 
