@@ -9,7 +9,7 @@ build:
 	@echo ""
 
 run:
-	@[ "${scene}" ] || ( echo "\033[31musage:\033[0m do \`\033[34mmake run scene=\033[93m[path to scene json]\033[0m\` to indicate scene to be rendered"; exit 1 )
+	@[ "${scene}" ] || ( echo -e "\033[31musage:\033[0m do \`\033[34mmake run scene=\033[93m[path to scene json]\033[0m\` to indicate scene to be rendered"; exit 1 )
 	@dune build
 	@echo ""
 	@dune exec -- $(RUN) $(scene) $(width)

@@ -1,19 +1,24 @@
 open Yojson.Basic.Util
 
-(* A light can optionally have a position. If it does not have one, it is simply an ambient light
- * and shades all surfaces equally. If it does have a position, the shading depends on the light's
- * distance and access to the surface *)
+(* A light can optionally have a position. If it does not have one, it is 
+   simply an ambient light and shades all surfaces equally. If it does have a 
+   position, the shading depends on the light's distance and access to the 
+   surface *)
 type t = { intensity : Vector.t; position: Vector.t option }
 
 let from_json json = {
   intensity = json |> member "intensity" |> Vector.from_json;
   position = json |> member "position" |> 
-    to_option (fun x -> Vector.from_json x);
+             to_option (fun x -> Vector.from_json x);
 }
 
 let create_point intensity position = { intensity; position = Some position }
 
 let create_ambient intensity = {intensity; position = None}
+
+let intensity light = light.intensity 
+
+let position light = light.position 
 
 let illuminate hit scene { intensity; position; } =
   match position with
