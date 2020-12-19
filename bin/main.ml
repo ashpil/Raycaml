@@ -187,10 +187,10 @@ let get_camera ui =
 let get_light ui = 
   if ui = "custom" then 
     print_endline 
-      "  We will now create the lighting. To describe the lighting, we must describe
-  the intensity of the lighting as a vector where the magnitude of the intensity
-  is measured in the x, y, and z direction. Please enter the intensity of 
-  the light as a vector (x,y,z)."; 
+      "  We will now create the lighting. To describe the lighting, we must 
+  describe the intensity of the lighting as a vector where the magnitude of the 
+  intensity is measured in the x, y, and z direction. Please enter the intensity
+   of the light as a vector (x,y,z)."; 
   let intensity = vector_of_string (read_line()) in
   print_endline "  If you would like a specific position of the light source, 
   please enter it as a position vector (x,y,z). Otherwise, enter 'None'. 
