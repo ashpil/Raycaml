@@ -113,11 +113,21 @@ let get_material ui =
   a light source. This color value will determine the hue of the light that is 
   reflected, with x corresponding to red, y with green, and z with blue.";
   let spec_co = vector_of_string (read_line()) in 
-  print_endline "  Input the spec_exp as a float. This is the ";
+  print_endline "  Input the specular exponent as a float. This controls what
+  can be thought of as the 'shininess' of the object. The larger the number 
+  e.g. 100.0, the more focused the reflection on the object will appear, and 
+  thus it will seem shinier. The smaller the number, e.g. 1.0, the more spread 
+  out the reflection will be, causing it to appear more dull.";
   let spec_exp = float_of_string (read_line()) in 
-  print_endline "  Please input the mirror as a vector (x,y,z)";
+  print_endline "  Please input the reflective property of your object as a 
+  vector (x,y,z). Surfaces can be highly reflective, which causes many shadow 
+  rays to bounce off of them, or lowly reflective. This is broken into red,
+  green, and blue components corresponding to x, y, and z respectively.";
   let mirror = vector_of_string (read_line()) in 
-  print_endline "  Please input the ambient as a vector (x,y,z)";
+  print_endline "  Please input the ambient as a vector (x,y,z). Ambient light 
+  is the result of interactions between light sources and the objects in the 
+  scene. It appears to be uniform all over. It is also separated into red, 
+  green, and blue components.";
   let ambient = vector_of_string (read_line()) in
   Material.create diffuse spec_co spec_exp mirror ambient
 
@@ -147,12 +157,12 @@ let get_triangle ui =
 
 let get_camera ui = 
   if ui = "custom" then 
-  print_endline "  Next, we would like to know the physical properties of your 
+    print_endline "  Next, we would like to know the physical properties of your 
   camera. To begin with, please enter the origin of the camera as a position
   vector (x,y,z)"; 
   let origin = vector_of_string (read_line()) in 
   print_endline 
-  "  Next, the target of the camera will be the position that the camera will
+    "  Next, the target of the camera will be the position that the camera will
   be directly looking at. Please enter the target of the camera as a position 
   vector (x,y,z).";
   let target = vector_of_string (read_line()) in 
@@ -161,13 +171,13 @@ let get_camera ui =
   image. Please enter the aspect ratio of the camera as a float.";
   let aspect_ratio = float_of_string (read_line()) in 
   print_endline 
-  "  Next, we would like the vertical vector of the camera. This 
+    "  Next, we would like the vertical vector of the camera. This 
   vertical vector is orthogonal to the camera's origin and points upwards in the
   plane of the camera. Please enter the vertical vector of the camera as a 
   vector (x,y,z).";
   let vertical = vector_of_string (read_line()) in 
   print_endline 
-  "  Lastly, for the camera, we would like the vertical field of view of the 
+    "  Lastly, for the camera, we would like the vertical field of view of the 
   camera. The vertical field of view is the angle range in radians of what the 
   camera is capable of seeing. Please enter the vertical field of view of the 
   camera as a float.";
@@ -176,8 +186,8 @@ let get_camera ui =
 
 let get_light ui = 
   if ui = "custom" then 
-  print_endline 
-  "  We will now create the lighting. To describe the lighting, we must describe
+    print_endline 
+      "  We will now create the lighting. To describe the lighting, we must describe
   the intensity of the lighting as a vector where the magnitude of the intensity
   is measured in the x, y, and z direction. Please enter the intensity of 
   the light as a vector (x,y,z)."; 
@@ -191,26 +201,26 @@ let get_light ui =
 
 let get_scene objlist ui = 
   if ui = "custom" then 
-  print_endline 
-  "  We will now create the scene. Please enter the background color
+    print_endline 
+      "  We will now create the scene. Please enter the background color
    as a vector (x,y,z)."; 
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
 let get_file_name ui = 
   if ui = "custom" then 
-  print_endline "  Now, you get to name your ppm file. What would you like your 
+    print_endline "  Now, you get to name your ppm file. What would you like your 
   finished product to be called?"; 
   read_line() ^ ".ppm"
 
 let get_width ui = 
   if ui = "custom" then 
-  print_endline "  How wide should your image be in pixels? (enter an integer)";
+    print_endline "  How wide should your image be in pixels? (enter an integer)";
   int_of_string (read_line())
 
 let get_height ui = 
   if ui = "custom" then 
-  print_endline "  What should the height of your image be in pixels? (enter an 
+    print_endline "  What should the height of your image be in pixels? (enter an 
   integer)"; 
   int_of_string (read_line())
 
@@ -222,21 +232,21 @@ let rec get_objects objlist ui =
   let next_command = read_line() in 
   match (parse next_command) with 
   | Continue -> begin 
-    let object_type = next_command in 
-    if object_type = "Sphere" then 
-      get_objects ((get_sphere ui) :: objlist) ui 
-    else if object_type = "Triangle" then 
-      get_objects ((get_triangle ui) :: objlist) ui
-    else get_objects objlist ui
+      let object_type = next_command in 
+      if object_type = "Sphere" then 
+        get_objects ((get_sphere ui) :: objlist) ui 
+      else if object_type = "Triangle" then 
+        get_objects ((get_triangle ui) :: objlist) ui
+      else get_objects objlist ui
     end 
   | Quit -> begin 
-    let camera = get_camera ui in 
-    let light = get_light ui in 
-    let scene = get_scene objlist ui in 
-    let file_name = get_file_name ui in 
-    let width = get_width ui in 
-    let height = get_height ui in 
-    create_ppm camera light scene (Scene.bg_color scene) file_name width height
+      let camera = get_camera ui in 
+      let light = get_light ui in 
+      let scene = get_scene objlist ui in 
+      let file_name = get_file_name ui in 
+      let width = get_width ui in 
+      let height = get_height ui in 
+      create_ppm camera light scene (Scene.bg_color scene) file_name width height
     end 
   | exception Empty -> failwith "unimplemented"
 
@@ -272,7 +282,7 @@ let plain_json ui =
 
 let () = 
   print_endline 
-  "  Welcome to RayCaml, our OCaml raytracer. First, select whether 
+    "  Welcome to RayCaml, our OCaml raytracer. First, select whether 
   you would like to have a guided tour of the system, by building your very own 
   json file from scratch, or if you'd rather simply input the name of a json 
   file. Please enter either `custom` for the first option or `filename` for the 
