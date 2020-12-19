@@ -97,9 +97,8 @@ let vector_of_string vec =
   let z = String.sub vec (sndcomma + 1) (closep - sndcomma - 1) in
   Vector.create (float_of_string x) (float_of_string y) (float_of_string z)
 
-let get_material ui =
-  if ui = "custom" then
-    print_endline "  Next, we would like to know the material properties of your 
+let get_material () =
+  print_endline "  Next, we would like to know the material properties of your 
   object. We will start with diffusion. Light is said to be diffused when it 
   hits an object and scatters in a seemingly random way. Our diffuse property 
   has three components: x, which determines the amount of red light scattered;
@@ -121,20 +120,18 @@ let get_material ui =
   let ambient = vector_of_string (read_line()) in
   Material.create diffuse spec_co spec_exp mirror ambient
 
-let get_sphere ui = 
-  if ui = "custom" then 
-    print_endline "  Please enter the radius of the sphere as a float."; 
+let get_sphere () = 
+  print_endline "  Please enter the radius of the sphere as a float."; 
   let radius = float_of_string (read_line()) in 
   print_endline "  Please enter the center of the sphere as a vector in the form 
   (x,y,z) including the parentheses and with no spaces.";
   let center = vector_of_string (read_line()) in 
-  let material = get_material ui in 
+  let material = get_material () in 
   Object.create_sphere radius center material 
 
-let get_triangle ui = 
-  if ui = "custom" then 
-    print_endline "  Please enter the first vertex of the triangle as a vector 
-    (x,y,z)."; 
+let get_triangle () = 
+  print_endline "  Please enter the first vertex of the triangle as a vector 
+  (x,y,z)."; 
   let vert1 = vector_of_string (read_line()) in 
   print_endline "  Please enter the second vertex of the triangle as a vector 
     (x,y,z)."; 
@@ -142,11 +139,10 @@ let get_triangle ui =
   print_endline "  Please enter the third vertex of the triangle as a vector 
     (x,y,z)."; 
   let vert3 = vector_of_string (read_line()) in 
-  let material = get_material ui in 
-  Object.create_triangle (vert1, vert2, vert3) material 
+  let material = get_material () in 
+  Object.create_triangle (vert1, vert2, vert3) material
 
-let get_camera ui = 
-  if ui = "custom" then 
+let get_camera () = 
   print_endline "  Next, we would like to know the physical properties of your 
   camera. To begin with, please enter the origin of the camera as a position
   vector (x,y,z)"; 
@@ -174,8 +170,7 @@ let get_camera ui =
   let vfov = float_of_string (read_line()) in 
   Camera.create origin target aspect_ratio vertical vfov 
 
-let get_light ui = 
-  if ui = "custom" then 
+let get_light () = 
   print_endline 
   "  We will now create the lighting. To describe the lighting, we must describe
   the intensity of the lighting as a vector where the magnitude of the intensity
@@ -189,97 +184,71 @@ let get_light ui =
   if position = "None" then Light.create_ambient intensity 
   else Light.create_point intensity (vector_of_string position)
 
-let get_scene objlist ui = 
-  if ui = "custom" then 
+let get_scene objlist = 
   print_endline 
   "  We will now create the scene. Please enter the background color
    as a vector (x,y,z)."; 
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
-let get_file_name ui = 
-  if ui = "custom" then 
+let get_file_name () = 
   print_endline "  Now, you get to name your ppm file. What would you like your 
   finished product to be called?"; 
   read_line() ^ ".ppm"
 
-let get_width ui = 
-  if ui = "custom" then 
+let get_width () = 
   print_endline "  How wide should your image be in pixels? (enter an integer)";
   int_of_string (read_line())
 
-let get_height ui = 
-  if ui = "custom" then 
+let get_height () = 
   print_endline "  What should the height of your image be in pixels? (enter an 
   integer)"; 
   int_of_string (read_line())
 
-let rec get_objects objlist ui = 
-  if ui = "custom" then
-    print_endline "  Please enter a valid type of the object you would like to 
-    add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
-    already entered all of the objects you want, then type 'quit'"; 
+let rec get_objects objlist = 
+  print_endline "  Please enter a valid type of the object you would like to 
+  add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
+  already entered all of the objects you want, then type 'quit'"; 
   let next_command = read_line() in 
   match (parse next_command) with 
   | Continue -> begin 
     let object_type = next_command in 
     if object_type = "Sphere" then 
-      get_objects ((get_sphere ui) :: objlist) ui 
+      get_objects ((get_sphere ()) :: objlist) 
     else if object_type = "Triangle" then 
-      get_objects ((get_triangle ui) :: objlist) ui
-    else get_objects objlist ui
+      get_objects ((get_triangle ()) :: objlist)
+    else get_objects objlist
     end 
   | Quit -> begin 
-    let camera = get_camera ui in 
-    let light = get_light ui in 
-    let scene = get_scene objlist ui in 
-    let file_name = get_file_name ui in 
-    let width = get_width ui in 
-    let height = get_height ui in 
+    let camera = get_camera () in 
+    let light = get_light () in 
+    let scene = get_scene objlist in 
+    let file_name = get_file_name () in 
+    let width = get_width () in 
+    let height = get_height () in 
     create_ppm camera light scene (Scene.bg_color scene) file_name width height
     end 
   | exception Empty -> failwith "unimplemented"
 
-
-let build_own_json ui = 
-  if ui = "custom" then get_objects [] ui else failwith "impossible"
-
-let plain_json ui = 
+let plain_json () = 
   (* Ask for json file, if didn't get one, print message and exit *)
-  if ui = "filename" then
-    let input_json =
-      try Yojson.Basic.from_file (Sys.argv.(1))
-      with _ -> print_endline "Please pass a json file with a valid scene. ex: 
-    `raycaml scene.json`"; exit 1
-    in
-    let camera = input_json |> member "camera" |> Camera.from_json in
-    let light = input_json |> member "light" |> Light.from_json in
-    let scene = input_json |> Scene.from_json in
-    let bg_color = Scene.bg_color scene in
-    let file = (Sys.argv.(1) |> String.split_on_char '.' |> List.hd) ^ ".ppm" in
-    (* If a commandline argument integer was passed after the scene, use it 
-       as the width.
-     * Otherwise, default is 320 *)
-    let width =
-      try int_of_string Sys.argv.(2)
-      with _ -> 320
-    in
-    let height = int_of_float ((float_of_int width) /. 
-                               (Camera.get_aspect camera)) in 
-    create_ppm camera light scene bg_color file width height 
-  else failwith "this shouldn't be possible"
-
+  let input_json = Yojson.Basic.from_file (Sys.argv.(1)) in
+  let camera = input_json |> member "camera" |> Camera.from_json in
+  let light = input_json |> member "light" |> Light.from_json in
+  let scene = input_json |> Scene.from_json in
+  let bg_color = Scene.bg_color scene in
+  let file = (Sys.argv.(1) |> String.split_on_char '.' |> List.hd) ^ ".ppm" in
+  (* If a commandline argument integer was passed after the scene, use it 
+      as the width.
+    * Otherwise, default is 320 *)
+  let width =
+    try int_of_string Sys.argv.(2)
+    with _ -> 320
+  in
+  let height = int_of_float ((float_of_int width) /. 
+                              (Camera.get_aspect camera)) in 
+  create_ppm camera light scene bg_color file width height 
 
 let () = 
-  print_endline 
-  "  Welcome to RayCaml, our OCaml raytracer. First, select whether 
-  you would like to have a guided tour of the system, by building your very own 
-  json file from scratch, or if you'd rather simply input the name of a json 
-  file. Please enter either `custom` for the first option or `filename` for the 
-  latter to proceed.";
-  let user_choice = read_line() in 
-  try 
-    if user_choice = "custom" then build_own_json user_choice
-    else if user_choice = "filename" then plain_json user_choice
-    else raise (Failure "That is not a valid option.")
-  with Failure s -> print_endline s;() 
+  if Array.length Sys.argv != 1 then plain_json () else
+  (print_endline "  Welcome to RayCaml, our OCaml raytracer."; get_objects [])
