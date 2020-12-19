@@ -18,13 +18,9 @@
 open Yojson.Basic.Util
 open Raycaml
 
-(**  #require "yojson";;
-     let myvar = Yojson.Basic.from_string "\"object\"";;
-     Yojson.Basic.to_file "exfile.json" myvar;;
-
-*)
-
-
+(** [create_ppm cam light scene bg_color file w h] writes a ppm file named 
+    [file] of [scene] with background color [bg_color], [camera], and [light]. 
+    The ppm file has height [h] and width [w]. *)
 let create_ppm camera light scene bg_color file width height = 
   let oc = open_out file in    (* create or truncate file, return channel *)
   Printf.fprintf oc "P6\n%d %d\n255\n" width height; 
@@ -74,8 +70,12 @@ type command =
   | Quit
 
 exception Empty
-exception Malformed
 
+(** [select_words lst] is a command determined by the list of words [lst].
+    If [lst] is empty, meaning that the user didn't input anything, it raises
+    the exception [Empty]. If [lst] contains 'quit', meaning the user wants to 
+    stop inputting objects, then it returns the command [Quit]. Otherwise, 
+    it is the command [Continue] *)
 let rec select_words lst = 
   match lst with 
   | [] -> raise Empty 
@@ -85,18 +85,34 @@ let rec select_words lst =
       else Continue
     end 
 
+(** [parse str] returns a list of individual words from [str].*)
 let parse str =
   str |> String.split_on_char ' '|> select_words 
 
-let vector_of_string vec = 
-  let fstcomma = String.index vec ',' in 
-  let x = String.sub vec 1 (fstcomma - 1) in 
-  let sndcomma = String.index_from vec (fstcomma + 1) ',' in 
-  let y = String.sub vec (fstcomma + 1) (sndcomma - fstcomma - 1) in 
-  let closep = String.index_from vec (sndcomma + 1) ')' in 
-  let z = String.sub vec (sndcomma + 1) (closep - sndcomma - 1) in
-  Vector.create (float_of_string x) (float_of_string y) (float_of_string z)
+let get_comma comm = 
+  match comm with 
+  | Some v -> v 
+  | None -> failwith "  That is not a valid vector input. Recall that your
+  input should include parentheses and three numbers separated by commas. 
+  For example: (0.0,1.0,2.0)"
 
+
+(** [vector_of_string vec] is the vector created from a string [vec].*)  
+let vector_of_string vec = 
+  let fstcomma = String.index_opt vec ',' in 
+  let x = String.sub vec 1 (fstcomma - 1) in 
+  let sndcomma = String.index_from_opt vec (fstcomma + 1) ',' in 
+  let y = String.sub vec (fstcomma + 1) (sndcomma - fstcomma - 1) in 
+  let closep = String.index_from_opt vec (sndcomma + 1) ')' in 
+  let z = String.sub vec (sndcomma + 1) (closep - sndcomma - 1) in
+  try 
+    Vector.create (float_of_string x) (float_of_string y) (float_of_string z)
+  with _ -> failwith "  That is not a valid vector input. Recall that your
+  input should include parentheses and three numbers separated by commas. 
+  For example: (0.0,1.0,2.0)"
+
+(** [get_material ui] builds the material for an object if [ui] is 'custom' 
+    based on a sequence of user inputs.*)
 let get_material ui =
   if ui = "custom" then
     print_endline "  Next, we would like to know the material properties of your 
@@ -131,6 +147,8 @@ let get_material ui =
   let ambient = vector_of_string (read_line()) in
   Material.create diffuse spec_co spec_exp mirror ambient
 
+(** [get_sphere ui] is the sphere created from the specifications of the
+    user if [ui] is 'custom' *)
 let get_sphere ui = 
   if ui = "custom" then 
     print_endline "  Please enter the radius of the sphere as a float."; 
@@ -141,6 +159,8 @@ let get_sphere ui =
   let material = get_material ui in 
   Object.create_sphere radius center material 
 
+(** [get_triangle ui] is the triangle created from the specifications of the
+    user if [ui] is 'custom' *)
 let get_triangle ui = 
   if ui = "custom" then 
     print_endline "  Please enter the first vertex of the triangle as a vector 
@@ -155,6 +175,8 @@ let get_triangle ui =
   let material = get_material ui in 
   Object.create_triangle (vert1, vert2, vert3) material 
 
+(** [get_camera ui] is the camera created from the specifications of the
+    user if [ui] is 'custom' *)
 let get_camera ui = 
   if ui = "custom" then 
     print_endline "  Next, we would like to know the physical properties of your 
@@ -184,6 +206,8 @@ let get_camera ui =
   let vfov = float_of_string (read_line()) in 
   Camera.create origin target aspect_ratio vertical vfov 
 
+(** [get_light ui] is the light created from the specifications of the
+    user if [ui] is 'custom' *)
 let get_light ui = 
   if ui = "custom" then 
     print_endline 
@@ -199,6 +223,9 @@ let get_light ui =
   if position = "None" then Light.create_ambient intensity 
   else Light.create_point intensity (vector_of_string position)
 
+(** [get_scene objs ui] is the scene created from the specifications of the
+    user if [ui] is 'custom'. The scene contains objects [objs] and a 
+    background color determined by the user.*)
 let get_scene objlist ui = 
   if ui = "custom" then 
     print_endline 
@@ -207,25 +234,33 @@ let get_scene objlist ui =
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
+(** [get_file_name ui] is the string that the user wants to name their 
+    ppm file if [ui] is 'custom'.*)
 let get_file_name ui = 
   if ui = "custom" then 
     print_endline "  Now, you get to name your ppm file. What would you like 
     your finished product to be called?"; 
   read_line() ^ ".ppm"
 
+(** [get_width ui] is the width that the user wants their ppm file to have
+    if [ui] is 'custom'.*)
 let get_width ui = 
   if ui = "custom" then 
     print_endline 
-    "  How wide should your image be in pixels? (enter an integer)";
+      "  How wide should your image be in pixels? (enter an integer)";
   int_of_string (read_line())
 
+(** [get_height ui] is the height that the user wants their ppm file to have
+    if [ui] is 'custom'.*)
 let get_height ui = 
   if ui = "custom" then 
     print_endline 
-    "  What should the height of your image be in pixels? (enter an integer)"; 
+      "  What should the height of your image be in pixels? (enter an integer)"; 
   int_of_string (read_line())
 
-let rec get_objects objlist ui = 
+(** [get_inputs objs ui] is the ppm file that the user designs based on a 
+    series of inputs if [ui] is 'custom'.*)
+let rec get_inputs objlist ui = 
   if ui = "custom" then
     print_endline "  Please enter a valid type of the object you would like to 
     add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
@@ -235,10 +270,10 @@ let rec get_objects objlist ui =
   | Continue -> begin 
       let object_type = next_command in 
       if object_type = "Sphere" then 
-        get_objects ((get_sphere ui) :: objlist) ui 
+        get_inputs ((get_sphere ui) :: objlist) ui 
       else if object_type = "Triangle" then 
-        get_objects ((get_triangle ui) :: objlist) ui
-      else get_objects objlist ui
+        get_inputs ((get_triangle ui) :: objlist) ui
+      else get_inputs objlist ui
     end 
   | Quit -> begin 
       let camera = get_camera ui in 
@@ -248,14 +283,12 @@ let rec get_objects objlist ui =
       let width = get_width ui in 
       let height = get_height ui in 
       create_ppm camera light scene 
-      (Scene.bg_color scene) file_name width height
+        (Scene.bg_color scene) file_name width height
     end 
   | exception Empty -> failwith "unimplemented"
 
-
-let build_own_json ui = 
-  if ui = "custom" then get_objects [] ui else failwith "impossible"
-
+(** [plain_json ui] is the ppm file determined by an input json file that 
+    contains all the data about the scene if [ui] is 'filename'. *)
 let plain_json ui = 
   (* Ask for json file, if didn't get one, print message and exit *)
   if ui = "filename" then
@@ -291,7 +324,7 @@ let () =
   latter to proceed.";
   let user_choice = read_line() in 
   try 
-    if user_choice = "custom" then build_own_json user_choice
+    if user_choice = "custom" then get_inputs [] user_choice
     else if user_choice = "filename" then plain_json user_choice
     else raise (Failure "That is not a valid option.")
   with Failure s -> print_endline s;() 
