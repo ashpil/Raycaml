@@ -25,4 +25,6 @@ let specular angle {diffuse; spec_co; spec_exp; _ } =
 let ambient intensity { ambient; _ } =
   Vector.mult ambient intensity
 
+let mirror color { mirror; _ } =
+  Vector.mult mirror color
 

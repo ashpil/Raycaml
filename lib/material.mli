@@ -14,3 +14,6 @@ val specular : float -> t -> Vector.t
 
 (** [ambient intensity mat] is the ambient shading with [intensity] for [mat] *)
 val ambient : Vector.t -> t -> Vector.t
+
+(** [mirror color mat] is the mirror shading of [color] for [mat] *)
+val mirror : Vector.t -> t -> Vector.t

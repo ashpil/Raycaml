@@ -26,8 +26,7 @@ let illuminate hit scene { intensity; position; } =
     let hit_point = Hit.point hit in
     let light_ray = Vector.minus position hit_point in
 
-    let shadow_ray_tmp = Ray.create hit_point light_ray in
-    let shadow_ray = Ray.add_start shadow_ray_tmp 0.0001 in
+    let shadow_ray = Ray.create hit_point light_ray |> Ray.add_start 0.00001 in
 
     if Scene.intersect_bool shadow_ray scene then
       Vector.create 0. 0. 0.

@@ -17,6 +17,26 @@
 open Yojson.Basic.Util
 open Raycaml
 
+(** [shade ray hit scene lights depth] is the color that is produced by [ray]
+    producing [hit] in [scene] with [lights] and reflection up to [depth] *)
+let rec shade ray hit lights depth scene bg_color =
+  let fold_light acc v = Vector.add acc (Light.illuminate hit scene v) in
+  let color = List.fold_left fold_light (Vector.create 0. 0. 0.) lights in
+
+  if depth > 0 then
+    let v = Vector.mult_constant (Ray.dir ray) ~-.1.0 in
+    let norm = Hit.norm hit in
+    let new_dir = Vector.mult_constant (Vector.minus norm v) (2.0 *. (Vector.dot_prod norm v)) in
+    let ray = Ray.create (Hit.point hit) new_dir |> Ray.add_start 0.0001 in
+    Vector.add color (
+      match Scene.intersect ray scene with
+      | Some new_hit ->
+        hit |> Hit.mat |> Material.mirror (shade ray new_hit lights (depth - 1) scene bg_color)
+      | None ->
+        hit |> Hit.mat |> Material.mirror bg_color
+    )
+  else color
+
 (** [create_ppm cam lights scene bg_color file w h] writes a ppm file named 
     [file] of [scene] with background color [bg_color], [camera], and [lights]. 
     The ppm file has height [h] and width [w]. *)
@@ -30,8 +50,7 @@ let create_ppm camera lights scene bg_color file width height =
       let ray = Camera.generate_ray camera u v in
       match Scene.intersect ray scene with
       | Some hit ->
-        let fold_light acc v = Vector.add acc (Light.illuminate hit scene v) in
-        let color = List.fold_left fold_light (Vector.create 0. 0. 0.) lights in
+        let color = shade ray hit lights 100 scene bg_color in
         Vector.output_vector color oc
       | None -> 
         Vector.output_vector bg_color oc

@@ -5,7 +5,7 @@ type t
 val create : Vector.t -> Vector.t -> t
 
 (** [add_start ray start] is [ray] with it's start set to [start]. *)
-val add_start : t -> float -> t
+val add_start : float -> t -> t
 
 (** [evaluate ray magnitude] evaluates a [ray] given a [magnitude] using the 
     function P(t) = A + tb where A is the ray's origin, b is the ray's 
