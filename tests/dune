@@ -1,3 +1,4 @@
 (test
  (name raycaml)
- (libraries raycaml ounit2 yojson))
+ (libraries raycaml ounit2 yojson)
+ (instrumentation (backend bisect_ppx)))

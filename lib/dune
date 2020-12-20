@@ -1,6 +1,7 @@
 (library
  (name raycaml)
- (libraries yojson))
+ (libraries yojson)
+ (instrumentation (backend bisect_ppx)))
 
 (env
   (dev

@@ -15,12 +15,15 @@ run:
 
 test:
 	@dune build
-	@dune runtest $(TEST)
+	@dune runtest $(TEST) --instrument-with bisect_ppx --force
 	@echo ""
+
+bisect: clean test
+	@bisect-ppx-report html
 	
 clean:
 	@dune clean
-	-@rm src.zip 2> /dev/null || true
+	-@rm -rf src.zip doc.public doc.private _coverage bisect*.coverage 2> /dev/null || true
 	@echo -e "\033[36mCleaned!\033[0m"
 
 zip:
