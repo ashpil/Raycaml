@@ -1,11 +1,24 @@
 open Yojson.Basic.Util
 
-type t = {x : float; y : float; z : float}
+type t = {
+  x : float;
+  y : float;
+  z : float
+}
 
 let from_json json = {
-  x = json |> member "x" |> to_float;
-  y = json |> member "y" |> to_float;
-  z = json |> member "z" |> to_float;
+  x =
+    json
+    |> member "x"
+    |> to_float;
+  y =
+    json
+    |> member "y"
+    |> to_float;
+  z =
+    json
+    |> member "z"
+    |> to_float;
 }
 
 let create x y z = {
@@ -20,11 +33,14 @@ let origin = {
   z = 0.;
 }
 
-let get_x t = t.x
+let get_x { x; _} =
+  x
 
-let get_y t = t.y 
+let get_y { y; _ } =
+  y 
 
-let get_z t = t.z 
+let get_z { z; _ } =
+  z 
 
 let minus t1 t2 = {
   x = t1.x -. t2.x;
@@ -96,7 +112,12 @@ let string_of_vector v =
 
 let output_vector v oc =
   let output_part fn = 
-    v |> fn |> min 1.0 |> ( *. ) 255. |> int_of_float |> output_byte oc
+    v
+    |> fn
+    |> min 1.0
+    |> ( *. ) 255.
+    |> int_of_float
+    |> output_byte oc
   in
   output_part get_x;
   output_part get_y;

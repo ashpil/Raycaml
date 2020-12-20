@@ -26,14 +26,23 @@ let rec shade ray hit lights depth scene bg_color =
   if depth > 0 then
     let v = Vector.mult_constant (Ray.dir ray) ~-.1.0 in
     let norm = Hit.norm hit in
-    let new_dir = Vector.mult_constant (Vector.minus norm v) (2.0 *. (Vector.dot_prod norm v)) in
+    let new_dir =
+      v
+      |> Vector.dot_prod norm
+      |> ( *. ) 2.0
+      |> Vector.mult_constant (Vector.minus norm v)
+    in
     let ray = Ray.create (Hit.point hit) new_dir |> Ray.add_start 0.0001 in
     Vector.add color (
       match Scene.intersect ray scene with
       | Some new_hit ->
-        hit |> Hit.mat |> Material.mirror (shade ray new_hit lights (depth - 1) scene bg_color)
+        hit
+        |> Hit.mat
+        |> Material.mirror (shade ray new_hit lights (depth - 1) scene bg_color)
       | None ->
-        hit |> Hit.mat |> Material.mirror bg_color
+        hit
+        |> Hit.mat
+        |> Material.mirror bg_color
     )
   else color
 
@@ -88,11 +97,9 @@ exception Empty
 let rec select_words lst = 
   match lst with 
   | [] -> raise Empty 
-  | h :: t -> begin 
-      if h = "" then select_words t 
-      else if h = "quit" then Quit
-      else Continue
-    end 
+  | "" :: t -> select_words t 
+  | "quit" :: _ -> Quit 
+  | _ :: _ -> Continue
 
 (** [parse str] returns a list of individual words from [str].*)
 let parse str =
