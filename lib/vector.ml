@@ -68,12 +68,28 @@ let length t = Float.sqrt(t.x *. t.x +. t.y *. t.y +. t.z *. t.z)
 
 let unit_vector t1 = div_constant t1 (length t1)
 
-let random_unit_vector () = 
-  let theta = Random.float (2. *. Float.pi) in 
-  let pos_or_neg = Random.bool () in 
-  let z = if pos_or_neg then Random.float 1. else Random.float (-1.) in 
-  {
-    x = (Float.sqrt (1. -. z *. z)) *. Float.cos theta;
-    y = (Float.sqrt (1. -. z *. z)) *. Float.sin theta;
-    z = z;
-  }
+let det v1 v2 v3 = 
+  let a = get_x v1 in
+  let b = get_x v2 in
+  let c = get_x v3 in
+  let d = get_y v1 in
+  let e = get_y v2 in
+  let f = get_y v3 in
+  let g = get_z v1 in
+  let h = get_z v2 in
+  let j = get_z v3 in
+
+  let aej = a *. e *. j in  
+  let afh = a *. f *. h in  
+  let bdj = b *. d *. j in  
+  let bfg = b *. f *.g in  
+  let cdh = c *. d *. h in  
+  let ceg = c *.e *. g in  
+
+  aej -. afh -. bdj +. bfg +. cdh -. ceg
+
+let string_of_vector v = 
+  let x = v |> get_x |> string_of_float in
+  let y = v |> get_y |> string_of_float in
+  let z = v |> get_z |> string_of_float in
+  "[ " ^ x ^ " " ^ y ^ " " ^ z ^ " ]"
