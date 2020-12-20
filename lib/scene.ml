@@ -13,15 +13,17 @@ let objects scene = scene.objects
 
 let bg_color scene = scene.bg_color
 
-let cmp_hit h1 h2 = Stdlib.compare (Hit.distance h1) (Hit.distance h2)
+let cmp_hit h1 h2 = Stdlib.compare (Hit.distance h2) (Hit.distance h1)
 
 let get_greater_hit h1 h2 =
   match Option.compare cmp_hit h1 h2 with 
   | 1 -> h1
   | _ -> h2
 
-let intersect ray scene = 
-  scene.objects
-  |> List.map (fun obj -> Object.intersect ray obj)
-  |> List.fold_left (get_greater_hit) None
+let intersect ray { objects; _ } = 
+  objects
+  |> List.map (Object.intersect ray)
+  |> List.fold_left get_greater_hit None
 
+let intersect_bool ray { objects; _ } =
+  List.exists (fun x -> Option.is_some (Object.intersect ray x)) objects

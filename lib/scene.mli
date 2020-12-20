@@ -22,3 +22,7 @@ val get_greater_hit : Hit.t option -> Hit.t option -> Hit.t option
 (** [intersect ray scene] intersects the ray with all objects in the scene, 
     and returns the hit with smallest t value *)
 val intersect : Ray.t -> t -> Hit.t option
+
+(** [intersect_bool ray scene] is true if any object intersects [ray] in scene,
+    and false otherwise. *)
+val intersect_bool : Ray.t -> t -> bool

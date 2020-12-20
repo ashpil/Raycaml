@@ -23,16 +23,24 @@ let position light = light.position
 let illuminate hit scene { intensity; position; } =
   match position with
   | Some position ->
-    let hit_norm = Hit.norm hit in
-    let light_ray = Vector.minus position (Hit.point hit) in
-    let v = Vector.mult_constant (Vector.unit_vector (Hit.dir hit)) ~-.1. in
-    let l = Vector.unit_vector light_ray in
-    let h = Vector.unit_vector (Vector.add v l) in
-    let angle = Vector.dot_prod hit_norm h in
-    let numer = max 0.0 (Vector.dot_prod hit_norm l) in
-    let denom = Vector.length light_ray ** 2.0 in
-    let irradiance = Vector.mult_constant intensity (numer /. denom) in
-    let specular = Material.specular angle (Hit.mat hit) in
-    Vector.mult irradiance specular
+    let hit_point = Hit.point hit in
+    let light_ray = Vector.minus position hit_point in
+
+    let shadow_ray_tmp = Ray.create hit_point light_ray in
+    let shadow_ray = Ray.add_start shadow_ray_tmp 0.0001 in
+
+    if Scene.intersect_bool shadow_ray scene then
+      Vector.create 0. 0. 0.
+    else 
+      let hit_norm = Hit.norm hit in
+      let v = Vector.mult_constant (Vector.unit_vector (Hit.dir hit)) ~-.1. in
+      let l = Vector.unit_vector light_ray in
+      let h = Vector.unit_vector (Vector.add v l) in
+      let angle = Vector.dot_prod hit_norm h in
+      let numer = max 0.0 (Vector.dot_prod hit_norm l) in
+      let denom = Vector.length light_ray ** 2.0 in
+      let irradiance = Vector.mult_constant intensity (numer /. denom) in
+      let specular = Material.specular angle (Hit.mat hit) in
+      Vector.mult irradiance specular
   | None -> Material.ambient intensity (Hit.mat hit)
 

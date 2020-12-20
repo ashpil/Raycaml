@@ -5,6 +5,8 @@ type t = { origin : Vector.t;
 
 let create origin direction = {origin; direction; start = 0.; finish = None}
 
+let add_start ray start = { ray with start }
+
 let evaluate ray magnitude = Vector.add ray.origin 
     (Vector.mult_constant ray.direction magnitude)
 
