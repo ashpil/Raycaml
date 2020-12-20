@@ -1,6 +1,6 @@
 open Yojson.Basic.Util
 
-(* A light can optionally have a position. If it does not have one, it is 
+(**A light can optionally have a position. If it does not have one, it is 
    simply an ambient light and shades all surfaces equally. If it does have a 
    position, the shading depends on the light's distance and access to the 
    surface *)
@@ -23,11 +23,16 @@ let position light = light.position
 let illuminate hit scene { intensity; position; } =
   match position with
   | Some position ->
+    let hit_norm = Hit.norm hit in
     let light_ray = Vector.minus position (Hit.point hit) in
     let v = Vector.mult_constant (Vector.unit_vector (Hit.dir hit)) ~-.1. in
     let l = Vector.unit_vector light_ray in
     let h = Vector.unit_vector (Vector.add v l) in
-    let angle = Vector.dot_prod (Hit.norm hit) h in
-    Material.specular (Vector.dot_prod (Hit.norm hit) h) (Hit.mat hit)
-  | None -> Vector.create 0. 0. 0.
+    let angle = Vector.dot_prod hit_norm h in
+    let numer = max 0.0 (Vector.dot_prod hit_norm l) in
+    let denom = Vector.length light_ray ** 2.0 in
+    let irradiance = Vector.mult_constant intensity (numer /. denom) in
+    let specular = Material.specular angle (Hit.mat hit) in
+    Vector.mult irradiance specular
+  | None -> Material.ambient intensity (Hit.mat hit)
 

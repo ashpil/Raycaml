@@ -22,3 +22,7 @@ let from_json json = {
 let specular angle {diffuse; spec_co; spec_exp; _ } =
   Vector.add diffuse (Vector.mult_constant spec_co (angle ** spec_exp))
 
+let ambient intensity { ambient; _ } =
+  Vector.mult ambient intensity
+
+

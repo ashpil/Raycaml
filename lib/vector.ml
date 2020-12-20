@@ -93,3 +93,11 @@ let string_of_vector v =
   let y = v |> get_y |> string_of_float in
   let z = v |> get_z |> string_of_float in
   "[ " ^ x ^ " " ^ y ^ " " ^ z ^ " ]"
+
+let output_vector v oc =
+  let output_part fn = 
+    v |> fn |> min 1.0 |> ( *. ) 255. |> int_of_float |> output_byte oc
+  in
+  output_part get_x;
+  output_part get_y;
+  output_part get_z

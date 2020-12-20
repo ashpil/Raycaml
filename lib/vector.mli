@@ -56,3 +56,6 @@ val det : t -> t -> t -> float
 (** [string_of_vector v] is the string "[ x y z ]" when [v] has x coordinate x,
     y coordinate y, and z coordinate z *)
 val string_of_vector : t -> string
+
+(** [output_vector v oc] outputs [v] to channel [oc] *)
+val output_vector : t -> out_channel -> unit
