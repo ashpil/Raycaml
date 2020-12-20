@@ -17,8 +17,8 @@
 open Yojson.Basic.Util
 open Raycaml
 
-(** [create_ppm cam light scene bg_color file w h] writes a ppm file named 
-    [file] of [scene] with background color [bg_color], [camera], and [light]. 
+(** [create_ppm cam lights scene bg_color file w h] writes a ppm file named 
+    [file] of [scene] with background color [bg_color], [camera], and [lights]. 
     The ppm file has height [h] and width [w]. *)
 let create_ppm camera lights scene bg_color file width height = 
   let oc = open_out file in    (* create or truncate file, return channel *)
@@ -132,26 +132,26 @@ let get_material () =
   has three components: x, which determines the amount of red light scattered;
   y, the amount of green light scattered; and z, the amount of blue light. So, 
   the larger the x value, the more red the object will appear, and so on. 
-  Please input the diffusion as a vector (x,y,z), where all values are between 
+  Please input the diffusion as a VECTOR (x,y,z), where all values are between 
   0 and 0.7";
   let diffuse = vector_of_string (read_line()) in 
-  print_endline "  Next, please input the specular color as a vector (x,y,z)
+  print_endline "  Next, please input the specular color as a VECTOR (x,y,z)
   with values between 0 and 0.5. A specular highlight is a mirror reflection of 
   a light source. This color value will determine the hue of the light that is 
   reflected, with x corresponding to red, y with green, and z with blue.";
   let spec_co = vector_of_string (read_line()) in 
-  print_endline "  Input the specular exponent as a float. This controls what
+  print_endline "  Input the specular exponent as a FLOAT. This controls what
   can be thought of as the 'shininess' of the object. The larger the number 
   e.g. 100.0, the more focused the reflection on the object will appear, and 
   thus it will seem shinier. The smaller the number, e.g. 1.0, the more spread 
   out the reflection will be, causing it to appear more dull.";
   let spec_exp = get_float (read_line()) in 
   print_endline "  Please input the reflective property of your object as a 
-  vector (x,y,z). Surfaces can be highly reflective, which causes many shadow 
+  VECTOR (x,y,z). Surfaces can be highly reflective, which causes many shadow 
   rays to bounce off of them, or lowly reflective. This is broken into red,
   green, and blue components corresponding to x, y, and z respectively.";
   let mirror = vector_of_string (read_line()) in 
-  print_endline "  Please input the ambient as a vector (x,y,z). Ambient light 
+  print_endline "  Please input the ambient as a VECTOR (x,y,z). Ambient light 
   is the result of interactions between light sources and the objects in the 
   scene. It appears to be uniform all over. It is also separated into red, 
   green, and blue components.";
@@ -160,10 +160,10 @@ let get_material () =
 
 (** [get_sphere] is the sphere created from the specifications of the user.*)
 let get_sphere () = 
-  print_endline "  Please enter the radius of the sphere as a float."; 
+  print_endline "  Please enter the radius of the sphere as a FLOAT."; 
   let radius = get_float (read_line()) in 
-  print_endline "  Please enter the center of the sphere as a vector in the form 
-  (x,y,z) including the parentheses and with no spaces.";
+  print_endline "  Please enter the center of the sphere as a VECTOR in the 
+  form (x,y,z) including the parentheses and with no spaces.";
   let center = vector_of_string (read_line()) in 
   let material = get_material () in 
   Object.create_sphere radius center material 
@@ -171,13 +171,13 @@ let get_sphere () =
 (** [get_triangle] is the triangle created from the specifications of the 
     user.*)
 let get_triangle () = 
-  print_endline "  Please enter the first vertex of the triangle as a vector 
+  print_endline "  Please enter the first vertex of the triangle as a VECTOR 
   (x,y,z)."; 
   let vert1 = vector_of_string (read_line()) in 
-  print_endline "  Please enter the second vertex of the triangle as a vector 
+  print_endline "  Please enter the second vertex of the triangle as a VECTOR 
     (x,y,z)."; 
   let vert2 = vector_of_string (read_line()) in 
-  print_endline "  Please enter the third vertex of the triangle as a vector 
+  print_endline "  Please enter the third vertex of the triangle as a VECTOR 
     (x,y,z)."; 
   let vert3 = vector_of_string (read_line()) in 
   let material = get_material () in 
@@ -188,44 +188,58 @@ let get_triangle () =
 let get_camera () = 
   print_endline "  Next, we would like to know the physical properties of your 
   camera. To begin with, please enter the origin of the camera as a position
-  vector (x,y,z)"; 
+  VECTOR (x,y,z)"; 
   let origin = vector_of_string (read_line()) in 
   print_endline 
     "  Next, the target of the camera will be the position that the camera will
   be directly looking at. Please enter the target of the camera as a position 
-  vector (x,y,z).";
+  VECTOR (x,y,z).";
   let target = vector_of_string (read_line()) in 
   print_endline "  Next, we want to know the aspect ratio for the camera. The
   aspect ratio is ratio of the width to the height for the dimensions of the 
-  image. Please enter the aspect ratio of the camera as a float.";
+  image. Please enter the aspect ratio of the camera as a FLOAT.";
   let aspect_ratio = get_float (read_line()) in 
   print_endline 
     "  Next, we would like the vertical vector of the camera. This 
-  vertical vector is orthogonal to the camera's origin and points upwards in the
-  plane of the camera. Please enter the vertical vector of the camera as a 
-  vector (x,y,z).";
+  vertical vector is orthogonal to the camera's origin and points upwards in 
+  the plane of the camera. Please enter the vertical vector of the camera as a 
+  VECTOR (x,y,z).";
   let vertical = vector_of_string (read_line()) in 
   print_endline 
     "  Lastly, for the camera, we would like the vertical field of view of the 
   camera. The vertical field of view is the angle range in radians of what the 
   camera is capable of seeing. Please enter the vertical field of view of the 
-  camera as a float.";
+  camera as a FLOAT.";
   let vfov = get_float (read_line()) in 
   Camera.create origin target aspect_ratio vertical vfov 
 
 (** [get_light] is the light created from the specifications of the user.*)
-let get_lights () = 
-  print_endline "  We will now create the lighting. To describe the lighting, 
-  we must describe the intensity of the lighting as a vector where the magnitude 
-  of the intensity is measured in the x, y, and z direction. Please enter the 
-  intensity of the light as a vector (x,y,z)."; 
-  let intensity = vector_of_string (read_line()) in
-  print_endline "  If you would like a specific position of the light source, 
-  please enter it as a position vector (x,y,z). Otherwise, enter 'None'. 
-  Entering none will create 'ambient lighting'. "; 
-  let position = read_line() in 
-  if position = "None" then [Light.create_ambient intensity]
-  else [Light.create_point intensity (vector_of_string position)]
+let rec get_lights lights = 
+  print_endline "  We will now create the lighting using one or more light 
+  sources. To describe the lighting, we must first describe the intensity of 
+  the lighting as a VECTOR where the magnitude of the intensity is measured in 
+  the x, y, and z direction. If you would like to add a light source, please 
+  enter the intensity of the light as a VECTOR (x,y,z). If you have ALREADY
+  entered ALL the light sources you would like (your scene must have AT LEAST 
+  ONE), then please enter 'quit'."; 
+  let intensity = read_line() in 
+  match (parse intensity) with 
+  | Continue -> begin 
+      let intens_vec = vector_of_string intensity in
+      print_endline "  If you would like a specific position of the light 
+      source, please enter it as a position VECTOR (x,y,z). Otherwise, enter 
+      'None'. Entering none will create 'ambient lighting,' while giving your 
+      light a position will make it a point source."; 
+      let position = read_line() in 
+      if position = "None" then get_lights 
+          ((Light.create_ambient intens_vec) :: lights)
+      else get_lights ((Light.create_point intens_vec 
+                          (vector_of_string position)) :: lights)
+    end 
+  | Quit -> lights
+  | exception Empty -> get_lights []
+
+
 
 (** [get_scene objs] is the scene created from the specifications of the
     user. The scene contains objects [objs] and a background color determined by 
@@ -233,7 +247,7 @@ let get_lights () =
 let get_scene objlist = 
   print_endline 
     "  We will now create the scene. Please enter the background color
-   as a vector (x,y,z) where x, y, and z represent RBG respectively."; 
+   as a VECTOR (x,y,z) where x, y, and z represent RBG respectively."; 
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
@@ -245,19 +259,19 @@ let get_file_name () =
 
 (** [get_width] is the width that the user wants their ppm file to have.*)
 let get_width () = 
-  print_endline "  How wide should your image be in pixels? (enter an integer)";
+  print_endline "  How wide should your image be in pixels? (enter an INTEGER)";
   get_int (read_line())
 
 (** [get_height] is the height that the user wants their ppm file to have.*)
 let get_height () = 
   print_endline "  What should the height of your image be in pixels? (enter an 
-  integer)"; 
+  INTEGER)"; 
   get_int (read_line())
 
 (** [get_inputs objs] is the ppm file that the user designs based on a 
     series of inputs.*)
 let rec get_inputs objlist = 
-  print_endline "  Please enter a valid type of the object you would like to 
+  print_endline "  Please enter a valid TYPE of the object you would like to 
   add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
   already entered all of the objects you want, then type 'quit'"; 
   let next_choice = read_line() in 
@@ -272,7 +286,7 @@ let rec get_inputs objlist =
     end 
   | Quit -> begin 
       let camera = get_camera () in 
-      let lights = get_lights () in 
+      let lights = get_lights [] in 
       let scene = get_scene objlist in 
       let file_name = get_file_name () in 
       let width = get_width () in 
