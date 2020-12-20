@@ -4,21 +4,33 @@ open Yojson.Basic.Util
    simply an ambient light and shades all surfaces equally. If it does have a 
    position, the shading depends on the light's distance and access to the 
    surface *)
-type t = { intensity : Vector.t; position: Vector.t option }
-
-let from_json json = {
-  intensity = json |> member "intensity" |> Vector.from_json;
-  position = json |> member "position" |> 
-             to_option (fun x -> Vector.from_json x);
+type t = {
+  intensity : Vector.t;
+  position: Vector.t option
 }
 
-let create_point intensity position = { intensity; position = Some position }
+let from_json json = {
+  intensity =
+    json
+    |> member "intensity"
+    |> Vector.from_json;
+  position =
+    json
+    |> member "position"
+    |> to_option Vector.from_json;
+}
 
-let create_ambient intensity = {intensity; position = None}
+let create_point intensity position =
+  { intensity; position = Some position }
 
-let intensity light = light.intensity 
+let create_ambient intensity =
+  { intensity; position = None }
 
-let position light = light.position 
+let intensity { intensity; _ } =
+  intensity 
+
+let position { position; _ } =
+  position 
 
 let illuminate hit scene { intensity; position; } =
   match position with
@@ -41,5 +53,6 @@ let illuminate hit scene { intensity; position; } =
       let irradiance = Vector.mult_constant intensity (numer /. denom) in
       let specular = Material.specular angle (Hit.mat hit) in
       Vector.mult irradiance specular
-  | None -> Material.ambient intensity (Hit.mat hit)
+  | None ->
+    Material.ambient intensity (Hit.mat hit)
 

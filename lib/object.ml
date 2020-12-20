@@ -12,19 +12,31 @@ let create_sphere radius center material = Sphere { radius; center; material }
 
 let create_triangle vertices material = Triangle { vertices; material }
 
-(* TODO: clean this up *)
 let from_json json =
   match json |> member "type" |> to_string with 
   | "sphere" -> Sphere {
-      radius = json |> member "radius" |> to_float;
-      material = json |> member "material" |> Material.from_json;
-      center = json |> member "center" |> Vector.from_json;
+      radius =
+        json
+        |> member "radius"
+        |> to_float;
+      material =
+        json
+        |> member "material"
+        |> Material.from_json;
+      center =
+        json |>
+        member "center"
+        |> Vector.from_json;
     }
   | "triangle" -> Triangle {
-      vertices = (json |> member "vertex1" |> Vector.from_json, 
-                  json |> member "vertex2" |> Vector.from_json, 
-                  json |> member "vertex3" |> Vector.from_json);
-      material = json |> member "material" |> Material.from_json;
+      vertices =
+        json |> member "vertex1" |> Vector.from_json, 
+        json |> member "vertex2" |> Vector.from_json, 
+        json |> member "vertex3" |> Vector.from_json;
+      material =
+        json
+        |> member "material"
+        |> Material.from_json;
     }
   | _ -> failwith "unknown object type"
 
