@@ -142,14 +142,10 @@ let print_ray ray =
   string_of_float (Vector.get_y (Ray.dir ray)) ^ " " ^
   string_of_float (Vector.get_z (Ray.dir ray))
 
-let print_vector vec = 
-  "x: " ^ string_of_float (Vector.get_x vec) ^ ", " ^
-  "y: " ^ string_of_float (Vector.get_y vec) ^ ", " ^
-  "z: " ^ string_of_float (Vector.get_z vec)
-
 let evaluate_test name ray magnitude expect = 
   name >:: fun _ ->
-    assert_equal expect (Ray.evaluate ray magnitude) ~printer:(print_vector)
+    assert_equal expect (Ray.evaluate ray magnitude)
+      ~printer:Vector.string_of_vector
 
 let dir_test name ray expect = 
   name >:: fun _ ->
@@ -206,7 +202,7 @@ let ray_o2 = Ray.create vector_eye2 (Vector.unit_vector dir_vector2)
 
 let generate_test name camera x y expect = 
   name >:: fun _ ->
-    assert_equal expect (Camera.generate_ray camera x y) ~printer:(print_ray)
+    assert_equal expect (Camera.generate_ray camera x y) ~printer:print_ray
 
 let camera_tests = 
   [
@@ -353,7 +349,7 @@ let hit_tests =
 let get_spec_test name angle material expect = 
   name >:: fun _ ->
     assert_equal expect (Material.specular angle material)
-      ~printer:(print_vector)
+      ~printer:Vector.string_of_vector
 
 let material_tests = 
   [
@@ -380,7 +376,7 @@ let get_intensity_test name light expect =
 let illuminate_test name hit scene light expect = 
   name >:: fun _ ->
     assert_equal expect (Light.illuminate hit scene light) 
-      ~printer: (print_vector)
+      ~printer:Vector.string_of_vector
 
 let light_tests = 
   [

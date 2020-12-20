@@ -34,3 +34,7 @@ _opam/
 # Random
 .DS_Store
 src.zip
+_coverage
+doc.public
+doc.private
+

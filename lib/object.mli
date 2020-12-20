@@ -7,7 +7,8 @@ val from_json :  Yojson.Basic.t -> t
 (** [mat object] is the material of [object] *)
 val mat : t -> Material.t
 
-(** TODO *)
+(** [intersect ray object] is Some hit if [ray] intersects [object], creating
+a hit, otherwise, None *)
 val intersect : Ray.t -> t -> Hit.t option
 
 (** [create_sphere r c mat] is the object of type Sphere with radius [r], 

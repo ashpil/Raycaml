@@ -1,0 +1,7 @@
+Although our system is a bit smaller than the expected size at _______ LOC,
+we argue that this measure does not define our project or the effort we put into 
+it. We believe this metric is somewhat counterintuitive, because as programmers 
+we've been taught to optimize code and make everything as concise as possible. 
+Thus, we put extra effort into having more efficient code, rather than focusing 
+on system size. Additionally the mathematical and conceptual rigor of building 
+this system represents more effort than its physical size.

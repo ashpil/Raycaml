@@ -9,6 +9,8 @@ val from_json : Yojson.Basic.t -> t
     properties *)
 val create : Vector.t -> Vector.t -> float -> Vector.t -> Vector.t -> t
 
-(** [specular angle mat] is the specular shading at [angle] for [material]  *)
+(** [specular angle mat] is the specular shading at [angle] for [mat] *)
 val specular : float -> t -> Vector.t
 
+(** [ambient intensity mat] is the ambient shading with [intensity] for [mat] *)
+val ambient : Vector.t -> t -> Vector.t

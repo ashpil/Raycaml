@@ -5,8 +5,7 @@
      -- write stuff to the channel 
      -- when done, close the channel (should flush out_channel)
      -- functions: open_out, open_out_bin, flush, close_out, close_out_nerr
-     -- standard out_channels: stdout, stderr
-   - need to write a header:
+     -- standard out_channels: stdout, stderr - need to write a header:
      P3 
      width height 
      maximum size of colors (255)
@@ -21,7 +20,7 @@ open Raycaml
 (** [create_ppm cam light scene bg_color file w h] writes a ppm file named 
     [file] of [scene] with background color [bg_color], [camera], and [light]. 
     The ppm file has height [h] and width [w]. *)
-let create_ppm camera light scene bg_color file width height = 
+let create_ppm camera lights scene bg_color file width height = 
   let oc = open_out file in    (* create or truncate file, return channel *)
   Printf.fprintf oc "P6\n%d %d\n255\n" width height; 
   for i = 0 to pred height do (* write each row *)
@@ -30,21 +29,12 @@ let create_ppm camera light scene bg_color file width height =
       let u = ((float_of_int j) +. 0.5) /. (float_of_int width) in
       let ray = Camera.generate_ray camera u v in
       match Scene.intersect ray scene with
-      | Some(hit) ->
-        let color = Light.illuminate hit scene light in
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_x color) *. 255.))); 
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_y color) *. 255.))); 
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_z color) *. 255.))); 
+      | Some hit ->
+        let fold_light acc v = Vector.add acc (Light.illuminate hit scene v) in
+        let color = List.fold_left fold_light (Vector.create 0. 0. 0.) lights in
+        Vector.output_vector color oc
       | None -> 
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_x bg_color) *. 255.))); 
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_y bg_color) *. 255.))); 
-        output_char oc (char_of_int (int_of_float 
-                                       ((Vector.get_z bg_color) *. 255.))); 
+        Vector.output_vector bg_color oc
     done 
   done;
 
@@ -65,18 +55,17 @@ type custom_in = {
   light_in : Light.t; 
 }
 
-type command = 
+type choice = 
   | Continue
   | Quit
 
 exception Empty
-exception Malformed
 
-(** [select_words lst] is a command determined by the list of words [lst].
+(** [select_words lst] is a choice determined by the list of words [lst].
     If [lst] is empty, meaning that the user didn't input anything, it raises
     the exception [Empty]. If [lst] contains 'quit', meaning the user wants to 
-    stop inputting objects, then it returns the command [Quit]. Otherwise, 
-    it is the command [Continue] *)
+    stop inputting objects, then it returns the choice [Quit]. Otherwise, 
+    it is the choice [Continue] *)
 let rec select_words lst = 
   match lst with 
   | [] -> raise Empty 
@@ -225,7 +214,7 @@ let get_camera () =
   Camera.create origin target aspect_ratio vertical vfov 
 
 (** [get_light] is the light created from the specifications of the user.*)
-let get_light () = 
+let get_lights () = 
   print_endline "  We will now create the lighting. To describe the lighting, 
   we must describe the intensity of the lighting as a vector where the magnitude 
   of the intensity is measured in the x, y, and z direction. Please enter the 
@@ -235,8 +224,8 @@ let get_light () =
   please enter it as a position vector (x,y,z). Otherwise, enter 'None'. 
   Entering none will create 'ambient lighting'. "; 
   let position = read_line() in 
-  if position = "None" then Light.create_ambient intensity 
-  else Light.create_point intensity (vector_of_string position)
+  if position = "None" then [Light.create_ambient intensity]
+  else [Light.create_point intensity (vector_of_string position)]
 
 (** [get_scene objs] is the scene created from the specifications of the
     user. The scene contains objects [objs] and a background color determined by 
@@ -271,10 +260,10 @@ let rec get_inputs objlist =
   print_endline "  Please enter a valid type of the object you would like to 
   add to the scene (Sphere or Triangle - case sensitive). Or, if you have 
   already entered all of the objects you want, then type 'quit'"; 
-  let next_command = read_line() in 
-  match (parse next_command) with 
+  let next_choice = read_line() in 
+  match (parse next_choice) with 
   | Continue -> begin 
-      let object_type = next_command in 
+      let object_type = next_choice in 
       if object_type = "Sphere" then 
         get_inputs ((get_sphere ()) :: objlist) 
       else if object_type = "Triangle" then 
@@ -283,12 +272,12 @@ let rec get_inputs objlist =
     end 
   | Quit -> begin 
       let camera = get_camera () in 
-      let light = get_light () in 
+      let lights = get_lights () in 
       let scene = get_scene objlist in 
       let file_name = get_file_name () in 
       let width = get_width () in 
       let height = get_height () in 
-      create_ppm camera light scene (Scene.bg_color scene) file_name width 
+      create_ppm camera lights scene (Scene.bg_color scene) file_name width 
         height
     end 
   | exception Empty -> get_inputs []
@@ -299,7 +288,8 @@ let plain_json () =
   (* Ask for json file, if didn't get one, print message and exit *)
   let input_json = Yojson.Basic.from_file (Sys.argv.(1)) in
   let camera = input_json |> member "camera" |> Camera.from_json in
-  let light = input_json |> member "light" |> Light.from_json in
+  let lights =
+    input_json |> member "lights" |> to_list |> List.map Light.from_json in
   let scene = input_json |> Scene.from_json in
   let bg_color = Scene.bg_color scene in
   let file = (Sys.argv.(1) |> String.split_on_char '.' |> List.hd) ^ ".ppm" in
@@ -312,7 +302,7 @@ let plain_json () =
   in
   let height = int_of_float ((float_of_int width) /. 
                              (Camera.get_aspect camera)) in 
-  create_ppm camera light scene bg_color file width height 
+  create_ppm camera lights scene bg_color file width height 
 
 let () = 
   if Array.length Sys.argv != 1 then plain_json () else
