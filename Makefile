@@ -18,9 +18,13 @@ test:
 	@dune runtest $(TEST) --instrument-with bisect_ppx --force
 	@echo ""
 
+docs:
+	@dune build @doc
+	@echo ""
+
 bisect: clean test
 	@bisect-ppx-report html
-	
+
 clean:
 	@dune clean
 	-@rm -rf src.zip doc.public doc.private _coverage bisect*.coverage 2> /dev/null || true
