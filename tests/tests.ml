@@ -1,5 +1,4 @@
-(* may need to rename this file "test.ml" 
-
+(* 
    TEST PLAN: 
 
    Our approach to testing was to test as many of the functions in the modules 
@@ -82,6 +81,14 @@ let unit_vector_test name vec expect =
   name >:: fun _ ->
     assert_equal expect (Vector.unit_vector vec)
 
+let det_test name v1 v2 v3 expect = 
+  name >:: fun _ ->
+    assert_equal expect (Vector.det v1 v2 v3)
+
+let str_o_vec_test name vec expect = 
+  name >:: fun _ ->
+    assert_equal expect (Vector.string_of_vector vec)
+
 let vector_o = Vector.create 0. 0. 0.
 let vector1 = Vector.create 1. 2. 3. 
 let vector2 = Vector.create 1. 3. 2.
@@ -132,6 +139,10 @@ let vector_tests =
     length_test "Length of vector9 - negative" vector9 (Float.sqrt 27.); 
     length_test "Length of vector8 - negative" vector8 (Float.sqrt 14.); 
     unit_vector_test "Unit vector of vector1" vector1 vector10;
+    det_test "determinant of positive vectors" vector4 vector5 vector1 7.; 
+    det_test "determinant of positive vectors" vector4 vector5 vector8 14.; 
+    str_o_vec_test "string of zero vector" vector_o "[ 0. 0. 0. ]";
+    str_o_vec_test "string of non-zero vector" vector1 "[ 1. 2. 3. ]";
   ]
 
 let print_ray ray = 
@@ -217,20 +228,32 @@ let vector_1 = Vector.create 2.0 0. 0.
 let vector_2 = Vector.create 1.0 0. 0.
 let sphere1 = Object.create_sphere 1.0 vector_1 material1 
 let ray_hit1 = Ray.create vector_o vector_2
+let ray_hit2 = Ray.create vector_2 vector_o
+let test_scene = Yojson.Basic.from_file "test_scene.json"
+let scene_json = test_scene |> Scene.from_json 
+let bg_color_json = Scene.bg_color scene_json 
+let intbool_scene = Scene.create [sphere1] bg_color_json
 
 let intersect_test name ray an_object expect = 
   name >:: fun _ ->
     assert_equal expect (Object.intersect ray an_object |> Option.get |> 
                          Hit.distance) ~printer:string_of_float
 
+let intersect_bool_test name ray an_object expect = 
+  name >:: fun _ ->
+    assert_equal expect (Scene.intersect_bool ray an_object)
+
 let intersection_tests =
   [
     intersect_test "ray from origin and sphere of radius 1 @(1, 0 ,0)" ray_hit1 
       sphere1 1.0;
+    intersect_bool_test "ray from origin and sphere of radius 1 @(1, 0 ,0) is 
+    true" ray_hit1 intbool_scene true;
+    intersect_bool_test "ray that doesn't hit sphere of radius 1 @(1, 0 ,0) is 
+    false" ray_hit2 intbool_scene false;
   ]
 
 (* creating objects from json file *)
-let test_scene = Yojson.Basic.from_file "test_scene.json"
 let cam_json = test_scene |> member "camera" |> Camera.from_json 
 let light_json = test_scene |> member "light" |> Light.from_json 
 let intens_json = Light.intensity light_json 
@@ -238,8 +261,6 @@ let pos_json =
   match Light.position light_json with 
   | Some c -> c 
   | None -> Vector.origin;;
-let scene_json = test_scene |> Scene.from_json 
-let bg_color_json = Scene.bg_color scene_json 
 let object1_json = List.nth (Scene.objects scene_json) 0 
 let object2_json = List.nth (Scene.objects scene_json) 1
 let object3_json = List.nth (Scene.objects scene_json) 2 
@@ -341,15 +362,27 @@ let greater_hit_test name hit1 hit2 expect =
 
 let hit_tests = 
   [
-    greater_hit_test "Return hit of greater distance" hit1 hit2 (Some hit2);
+    greater_hit_test "Return hit of smaller distance" hit1 hit2 (Some hit1);
     greater_hit_test "Comparing hit distance with negatives" hit2 hit_neg 
-      (Some hit2)
+      (Some hit_neg)
   ]
 
 let get_spec_test name angle material expect = 
   name >:: fun _ ->
     assert_equal expect (Material.specular angle material)
       ~printer:Vector.string_of_vector
+
+let ambient_test name intensity material expect = 
+  name >:: fun _ ->
+    assert_equal expect (Material.ambient intensity material)
+      ~printer:Vector.string_of_vector
+
+let mirror_test name color material expect = 
+  name >:: fun _ ->
+    assert_equal expect (Material.mirror color material)
+      ~printer:Vector.string_of_vector
+
+let amb_intens = (Vector.create 0.1 0.2 0.3) 
 
 let material_tests = 
   [
@@ -358,7 +391,15 @@ let material_tests =
     get_spec_test "Get specular of material of triangle in json file with 
     angle of 1.0" 1.0 mat2_json (Vector.create (0.1+.0.2) (0.1+.0.2) 
                                    (0.1+.0.2));
-  ]
+    ambient_test "Get ambient of material of second sphere in json file with 
+       intensity of (0.1, 0.2, 0.3)" amb_intens mat3_json 
+      (Vector.create (0.1*.0.7) (0.2*.0.4) (0.3*.0.1));
+    mirror_test "Get mirror of material of triangle in json file with 
+    color (0.1, 0.5, 0.2)" (Vector.create 0.1 0.5 0.2) mat2_json 
+      (Vector.create (0.1*.0.1) (0.0*.0.5) (0.3*.0.2));
+  ] 
+
+
 
 let light_intens1 = Vector.create (100.) (100.) (100.)
 let light_pos1 = Vector.create (0.0) (0.1) (0.1)

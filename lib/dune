@@ -2,7 +2,8 @@
  (name raycaml)
  (public_name raycaml)
  (libraries yojson)
- (instrumentation (backend bisect_ppx)))
+  (instrumentation (backend bisect_ppx))
+)
 
 (env
   (dev

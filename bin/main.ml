@@ -159,10 +159,10 @@ let get_material () =
   y, the amount of green light scattered; and z, the amount of blue light. So, 
   the larger the x value, the more red the object will appear, and so on. 
   Please input the diffusion as a VECTOR (x,y,z), where all values are between 
-  0 and 0.7";
+  0 and 0.9";
   let diffuse = vector_of_string (read_line()) in 
   print_endline "  Next, please input the specular color as a VECTOR (x,y,z)
-  with values between 0 and 0.5. A specular highlight is a mirror reflection of 
+  with values between 0 and 0.9. A specular highlight is a mirror reflection of 
   a light source. This color value will determine the hue of the light that is 
   reflected, with x corresponding to red, y with green, and z with blue.";
   let spec_co = vector_of_string (read_line()) in 
@@ -173,23 +173,32 @@ let get_material () =
   out the reflection will be, causing it to appear more dull.";
   let spec_exp = get_float (read_line()) in 
   print_endline "  Please input the reflective property of your object as a 
-  VECTOR (x,y,z). Surfaces can be highly reflective, which causes many shadow 
-  rays to bounce off of them, or lowly reflective. This is broken into red,
-  green, and blue components corresponding to x, y, and z respectively.";
+  VECTOR (x,y,z) with each value between 0 and 0.9. Surfaces can be highly 
+  reflective, which causes many shadow rays to bounce off of them, or lowly 
+  reflective. This is broken into red, green, and blue components corresponding 
+  to x, y, and z respectively.";
   let mirror = vector_of_string (read_line()) in 
-  print_endline "  Please input the ambient as a VECTOR (x,y,z). Ambient light 
-  is the result of interactions between light sources and the objects in the 
-  scene. It appears to be uniform all over. It is also separated into red, 
-  green, and blue components.";
+  print_endline "  Please input the ambient as a VECTOR (x,y,z) with each value
+  between 0 and 0.9. Ambient light is the result of interactions between light 
+  sources and the objects in the scene. It appears to be uniform all over. It is
+  also separated into red, green, and blue components.";
   let ambient = vector_of_string (read_line()) in
   Material.create diffuse spec_co spec_exp mirror ambient
 
 (** [get_sphere] is the sphere created from the specifications of the user.*)
 let get_sphere () = 
-  print_endline "  Please enter the radius of the sphere as a FLOAT."; 
+  print_endline "  Please enter the radius of the sphere as a FLOAT. For a 
+  small sphere, enter a value between 0-0.2. For a medium sphere enter a value 
+  between 0.2-0.5. For a large sphere enter a value vetween 0.5-1.0"; 
   let radius = get_float (read_line()) in 
   print_endline "  Please enter the center of the sphere as a VECTOR in the 
-  form (x,y,z) including the parentheses and with no spaces.";
+  form (x,y,z) including the parentheses and with no spaces. The x coordinate
+  represents its left-right position, with negative values on the left hand
+  side, and positive values on the right. The y coordinate is vertical 
+  position, so negative values on the bottom and positive for the top. The z 
+  coordinate controls whether the object is in the foreground or background, 
+  so a negative z value pushes the object further back, and a positive one 
+  brings the object forward.";
   let center = vector_of_string (read_line()) in 
   let material = get_material () in 
   Object.create_sphere radius center material 
@@ -197,14 +206,14 @@ let get_sphere () =
 (** [get_triangle] is the triangle created from the specifications of the 
     user.*)
 let get_triangle () = 
-  print_endline "  Please enter the first vertex of the triangle as a VECTOR 
-  (x,y,z)."; 
+  print_endline "  We will now enter the vertices of the triangle. Please enter 
+  the first vertex of the triangle as a position VECTOR (x,y,z)."; 
   let vert1 = vector_of_string (read_line()) in 
-  print_endline "  Please enter the second vertex of the triangle as a VECTOR 
-    (x,y,z)."; 
+  print_endline "  Please enter the second vertex of the triangle as a position 
+  VECTOR (x,y,z)."; 
   let vert2 = vector_of_string (read_line()) in 
-  print_endline "  Please enter the third vertex of the triangle as a VECTOR 
-    (x,y,z)."; 
+  print_endline "  Please enter the third vertex of the triangle as a position 
+  VECTOR (x,y,z)."; 
   let vert3 = vector_of_string (read_line()) in 
   let material = get_material () in 
   Object.create_triangle (vert1, vert2, vert3) material
@@ -253,9 +262,9 @@ let rec get_lights lights =
   | Continue -> begin 
       let intens_vec = vector_of_string intensity in
       print_endline "  If you would like a specific position of the light 
-      source, please enter it as a position VECTOR (x,y,z). Otherwise, enter 
-      'None'. Entering none will create 'ambient lighting,' while giving your 
-      light a position will make it a point source."; 
+  source, please enter it as a position VECTOR (x,y,z) with values between 
+  0-0.9. Otherwise, enter 'None'. Entering none will create 'ambient lighting,' 
+  while giving your light a position will make it a point source."; 
       let position = read_line() in 
       if position = "None" then get_lights 
           ((Light.create_ambient intens_vec) :: lights)
@@ -273,14 +282,17 @@ let rec get_lights lights =
 let get_scene objlist = 
   print_endline 
     "  We will now create the scene. Please enter the background color
-   as a VECTOR (x,y,z) where x, y, and z represent RBG respectively."; 
+   as a VECTOR (x,y,z) where x, y, and z represent RBG respectively. These 
+   values should be between 0 and 1, with 1 corresponding to maximum saturation,
+   aka 255 on RGB spectrum, and 0 corresponding to no saturation of that 
+   color."; 
   let bg_color = vector_of_string (read_line()) in 
   Scene.create objlist bg_color 
 
 (** [get_file_name] is the string that the user wants to name their ppm file.*)
 let get_file_name () = 
-  print_endline "  Now, you get to name your ppm file. What would you like your 
-  finished product to be called?"; 
+  print_endline "  Now, we're almost done. You get to name your ppm file. What 
+  would you like your finished product to be called?"; 
   read_line() ^ ".ppm"
 
 (** [get_width] is the width that the user wants their ppm file to have.*)
